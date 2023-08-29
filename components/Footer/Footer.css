@@ -2,5 +2,19 @@ footer {
 	display: flex;
 	justify-content: center;
 	align-items: center;
-	height: 10vh;
+	height: 5vh;
+}
+
+#lineMessageContainer{
+    display: flex;
+    align-items: center;
+}
+
+#overlay{
+    position: absolute;
+    display: flex;
+    bottom:2vh;
+    justify-content: center;
+    align-items: center;
+    
 }

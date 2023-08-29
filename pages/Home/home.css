@@ -1,0 +1,21 @@
+#homeTitle{
+    position: absolute;
+    top: 16vh;
+}
+#homeContainer{
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 20px;
+}
+#profileImage{
+    width: 45px;
+    border-radius: 8px;
+    border: 1px solid black;
+}
+
+#name,
+#job,
+#description, #homeLinks {
+    padding: 10px;
+}

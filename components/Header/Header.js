@@ -2,17 +2,27 @@ import './Header.css';
 
 const template = () => {
   return `
-    <h1>Router</h1>
+    <h1>Portfolio</h1>
     <nav>
         <ul>
             <li>
-                <a href="/">Home</a>
+            <a href="/home">
+            <i class="fas fa-home" style="color: #d64000;"></i>
+                Home</a>
             </li>
             <li>
-                <a href="/gallery">Gallery</a>
+                <a
+                href="/experience">
+                <i class="fa-solid fa-briefcase"></i>
+                 Experience
+                 </a>
             </li>
             <li>
-                <a href="/about">About</a>
+                <a
+                href="/projects">
+                <i class="fa-solid fa-diagram-project"></i>
+                Projects
+                </a>
             </li>
         </ul>
     </nav>

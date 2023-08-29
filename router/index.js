@@ -2,6 +2,7 @@ import Home from '../pages/Home/Home';
 import Experience from '../pages/Experience/Experience';
 import Projects from '../pages/Projects/Projects';
 import NotFound from '../pages/NotFound/NotFound';
+import fillHomeData from '../pages/Home/FillHomeData';
 
 //Vamos a crear un array de objetos que incluya la ruta y el componente de cada una de las páginas
 const routes = [
@@ -29,6 +30,9 @@ export const router = () => {
   //Vamos a renderizar el componente si existe en la etiqueta main y si no pintamos la ruta NotFound
   if (component) {
     document.querySelector('main').innerHTML = component();
+    if (path === '/home') {
+      fillHomeData();
+    }
   } else {
     document.querySelector('main').innerHTML = NotFound();
   }

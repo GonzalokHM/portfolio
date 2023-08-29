@@ -1,7 +1,15 @@
+import './home.css';
+
 const Home = () => {
   return `
-    <h2>Home</h2>
-    <p>Esta es la Home de nuestra aplicación web</p>
+  <h2 id=homeTitle>Home</h2> 
+  <div id="homeContainer">
+       <img id="profileImage" src="" alt="Profile Image">
+       <h2 id="name"></h2>
+       <p id="job"></p>
+       <p id= "description"></p>
+      <ul id="homeLinks"></ul>
+  </div>
     `;
 };
 
