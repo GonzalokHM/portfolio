@@ -30,12 +30,15 @@ export const router = () => {
   //Vamos a renderizar el componente si existe en la etiqueta main y si no pintamos la ruta NotFound
   if (component) {
     document.querySelector('main').innerHTML = component();
+    document.body.classList.remove('home-page');
     if (path === '/home') {
       fillHomeData();
+      document.body.classList.add('home-page');
     }
   } else {
     document.querySelector('main').innerHTML = NotFound();
   }
+ 
 };
 
 //Vamos a añadirle un evento popstate a window para que lance la función router cada vez que vayamos hacia adelante o hacia atrás en el navegador

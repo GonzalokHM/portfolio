@@ -3,21 +3,21 @@ import './Footer.css';
 const template = () => {
   return `
   <ul class="footer-contact-links">
-  <li>
+  <li id="linkedinLinkF" class="gitKedinF">
    <a href="https://www.linkedin.com/in/gonzalo-hernando-2973a2202/" target="_blank"
    <i class="fa-brands fa-linkedin"></i>
   </a>
   </li>
-   <li id="githubLink">
-    <a href="https://github.com/GonzalokHM" target="_blank">
-        <i class="fab fa-github"></i>
-    </a>
-   </li>
-   <li id="line">
-    <a href="line://msg/text/+34656316843" id="lineLink"
-    <i class="fa-brands fa-line" style="color: #00ff04;"></i>
-    </a>
-   </li>
+  <li id="line">
+  <a href="line://msg/text/+34656316843" id="lineLink"
+  <i class="fa-brands fa-line" style="color: #00ff04;"></i>
+  </a>
+  </li>
+  <li id="githubLinkF" class="gitKedinF">
+   <a href="https://github.com/GonzalokHM" target="_blank">
+       <i class="fab fa-github"></i>
+   </a>
+  </li>
   </ul>
   `;
 };
@@ -25,7 +25,6 @@ let messageContainer;
 
 const Footer = () => {
   document.querySelector('footer').innerHTML = template();
-
   const lineLink = document.getElementById('lineLink');
 
   lineLink.addEventListener('click', (ev) => {
@@ -34,7 +33,7 @@ const Footer = () => {
     if (/Mobi|Android/i.test(navigator.userAgent)) {
       // Dispositivo móvil, abrir Line
       window.location.href = 'line://msg/text/+34656316843';
-      console.log('Failed to launch error ==> Because you are not in a smartphone');
+      console.error('Failed to launch error ==> Because you are not in a smartphone');
     } else if (!messageContainer) {
       // Dispositivo de escritorio, mostrar mensaje
       const contactLinks = document.getElementsByClassName('footer-contact-links')[0];

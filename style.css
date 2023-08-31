@@ -67,21 +67,65 @@ main > * {
 }
 
 /* medias */
+@media screen and (max-width: 411px) {
+  .home-page .gitKedinF{
+    bottom: 5.6vh;
+    position: relative;
+}
+
+.home-page #githubLinkF{
+   bottom: 4.7rem;
+   left:28px;
+}
+
+.home-page #lineLink{
+    margin-left: 0.9rem;
+}
+.home-page #linkedinLinkF{
+  bottom: 1.95rem;
+  margin-right: 1.5rem;
+}
+}
+
+
 
 @media screen and (max-width: 501px) {
   header{
     flex-direction: column;
     }
+  #homeContainer{
+    padding-top: 12vh;
+  }
 }
-@media screen and (min-width: 412px) {
+@media screen and (min-width: 501px) {
+.home-page .gitKedinF {
+  bottom: 22vh;
+  position: relative;
+}
+  .footer-contact-links{
+    display: flex;
+    
+  }
+  
+  #lineLink{
+    margin: 5px;
+  }
+
+
+}
+@media screen and (min-width: 412px) and (max-width: 500px) {
 
 .footer-contact-links{
   display: flex;
   
 }
 
-#githubLink{
+#lineLink{
   margin: 5px;
+}
+.home-page .gitKedinF{
+  bottom: 15vh;
+  position: relative;
 }
 
 }
