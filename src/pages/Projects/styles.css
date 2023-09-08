@@ -1,0 +1,64 @@
+/* Define variables CSS para las dimensiones de las neuronas */
+:root {
+    --neuron-width: 40px;
+    --neuron-height: 40px;
+    --neuron-fill: #ff0000;
+    --dendrite-color: #c3ff00;
+  }
+  
+  /* Estilos para las neuronas */
+  .neuron {
+    width: var(--neuron-width);
+    height: var(--neuron-height);
+    background-color: var(--neuron-fill);
+    border-radius: 50%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    margin: 10px;
+    box-shadow: 0px 0px 5px rgba(0, 0, 0, 0.2); /* Sombra para las neuronas */
+  }
+  
+  /* Estilos para las conexiones ("dendritas") */
+  .dendrite {
+    position: absolute;
+    background-color: var(--dendrite-color);
+    width: 2px; /* Ancho de la dendrita */
+    z-index: -1; /* Colocar dendritas detrás de las neuronas */
+  }
+  
+  /* Alinea el texto en el centro de las neuronas */
+  .neuron p {
+    text-align: center;
+    margin: 0;
+  }
+  
+  /* Estilo para el texto de las neuronas */
+  .neuron p {
+    margin: 5px;
+  }
+  
+  /* Personaliza el enlace de los proyectos */
+  .neuron a {
+    text-decoration: none;
+  }
+  
+  /* Estilo para las imágenes de los proyectos */
+  .neuron img {
+    width: 80%;
+    height: auto;
+    border-radius: 50%;
+  }
+  
+  /* Estilo para el contenedor de las neuronas */
+  .neuron-container {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+    
+  }
+  
