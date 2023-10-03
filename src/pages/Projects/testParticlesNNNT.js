@@ -1,3 +1,15 @@
+getLimitedRandom=(min, max, roundToInteger)=> {
+  let number = Math.random() * (max - min) + min;
+  if (roundToInteger) {
+    number = Math.round(number);
+  }
+  return number;
+}
+
+returnRandomArrayitem=(array)=> {
+  return array[Math.floor(Math.random() * array.length)];
+}
+
 class Particle {
   constructor(parent, x, y, isProject, proyecto) {
     this.network = parent;
@@ -71,6 +83,9 @@ class Particle {
     }
     return number;
   }
+  
+
+
 
   loadImage(imgSrc) {
     // Cargar la imagen de proyecto
@@ -153,11 +168,10 @@ class ParticleNetwork {
         projectParticles.push(projectParticle);
       }
 
-      // Ahora 'projectParticles' contiene todas las partículas-proyecto distribuidas aleatoriamente
       return projectParticles;
     };
 
-    this.createParticles(true, SetProyectos);
+    this.createParticles(true);
     this.animationFrame = requestAnimationFrame(this.update.bind(this));
     this.bindUiActions();
   }
@@ -174,9 +188,45 @@ class ParticleNetwork {
     }
   }
 
+  connectParticles() {
+    for (let i = 0; i < this.particles.length; i++) {
+      for (let j = i + 1; j < this.particles.length; j++) {
+        const particleA = this.particles[i];
+        const particleB = this.particles[j];
+        const distance = this.getDistance(particleA, particleB);
+  
+        // Define una distancia umbral para conectar partículas
+        const thresholdDistance = 100;
+  
+        if (distance < thresholdDistance) {
+          // Dibuja una línea entre las partículas conectadas
+          this.drawConnection(particleA, particleB);
+        }
+      }
+    }
+  }
+  
+  getDistance(particleA, particleB) {
+    const dx = particleA.x - particleB.x;
+    const dy = particleA.y - particleB.y;
+    return Math.sqrt(dx * dx + dy * dy);
+  }
+  
+  drawConnection(particleA, particleB) {
+    // Dibuja una línea entre las partículas conectadas
+    this.ctx.strokeStyle = this.options.netLineColor;
+    this.ctx.lineWidth = 1;
+    this.ctx.beginPath();
+    this.ctx.moveTo(particleA.x, particleA.y);
+    this.ctx.lineTo(particleB.x, particleB.y);
+    this.ctx.stroke();
+  }
+  
+
   update() {
     // Actualizar partículas y redibujar la animación
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
+    this.connectParticles();
     this.particles.forEach((particle) => {
       particle.update();
       particle.draw();
@@ -186,57 +236,125 @@ class ParticleNetwork {
     }
     this.animationFrame = requestAnimationFrame(this.update.bind(this));
   }
-
   createInteractionParticle() {
-    // Crear una partícula de interacción (en respuesta al movimiento del ratón/touch)
-    const proyecto = {
-      particleColor: '#FF0000', // Color personalizado
-      radius: 2, // Radio personalizado
-      opacity: 0.7 // Opacidad personalizada
-    };
-    this.particles.push(new Particle(this, null, null, true, proyecto));
+    // Obtener una partícula de proyecto aleatoria (puedes personalizar esta lógica según tus necesidades)
+    const randomProjectParticle = this.getRandomProjectParticle();
+  
+    if (randomProjectParticle) {
+      // Verificar si ya existe una partícula de proyecto del mismo proyecto
+      const existingProjectParticleIndex = this.particles.findIndex((particle) =>
+        particle.isProject && particle.proyecto === randomProjectParticle.proyecto
+      );
+  
+      if (existingProjectParticleIndex !== -1) {
+        // Eliminar la partícula de proyecto existente del mismo proyecto
+        this.particles.splice(existingProjectParticleIndex, 1);
+      }
+  
+      // Crear una partícula de interacción basada en la partícula de proyecto seleccionada
+      const interactionParticle = {
+        particleColor: randomProjectParticle.particleColor, // Usar el mismo color
+        radius: randomProjectParticle.radius * 2, // Usar un radio más grande
+        opacity: 0.7 // Opacidad personalizada
+      };
+  
+      this.particles.push(new Particle(this, null, null, true, interactionParticle));
+    }
   }
-
-  removeInteractionParticle() {
-    // Eliminar partícula de interacción (en respuesta al mouseup/touchend)
-    this.particles = this.particles.filter((particle) => !particle.isProject);
-  }
-
   bindUiActions() {
-    // Manejo de eventos de interacción del usuario
+    this.spawnQuantity = 3;
+    this.mouseIsDown = false;
+    this.touchIsMoving = false;
+  
+    this.onMouseMove = (e) => {
+      if (!this.interactionParticle) {
+        this.createInteractionParticle();
+      }
+      this.interactionParticle.x = e.offsetX;
+      this.interactionParticle.y = e.offsetY;
+    };
+  
+    this.onTouchMove = (e) => {
+      e.preventDefault();
+      this.touchIsMoving = true;
+      if (!this.interactionParticle) {
+        this.createInteractionParticle();
+      }
+      this.interactionParticle.x = e.changedTouches[0].clientX;
+      this.interactionParticle.y = e.changedTouches[0].clientY;
+    };
+  
+    this.onMouseDown = (e) => {
+      this.mouseIsDown = true;
+      let counter = 0;
+      let quantity = this.spawnQuantity;
+      const intervalId = setInterval(() => {
+        if (this.mouseIsDown) {
+          if (counter === 1) {
+            quantity = 1;
+          }
+          for (let i = 0; i < quantity; i++) {
+            if (this.interactionParticle) {
+              this.particles.push(
+                new Particle(this, this.interactionParticle.x, this.interactionParticle.y)
+              );
+            }
+          }
+        } else {
+          clearInterval(intervalId);
+        }
+        counter++;
+      }, 50);
+    };
+  
+    this.onTouchStart = (e) => {
+      e.preventDefault();
+      setTimeout(() => {
+        if (!this.touchIsMoving) {
+          for (let i = 0; i < this.spawnQuantity; i++) {
+            this.particles.push(
+              new Particle(this, e.changedTouches[0].clientX, e.changedTouches[0].clientY)
+            );
+          }
+        }
+      }, 200);
+    };
+  
+    this.onMouseUp = (e) => {
+      this.mouseIsDown = false;
+    };
+  
+    this.onMouseOut = (e) => {
+      this.removeInteractionParticle();
+    };
+  
+    this.onTouchEnd = (e) => {
+      e.preventDefault();
+      this.touchIsMoving = false;
+      this.removeInteractionParticle();
+    };
+  
+    this.canvas.addEventListener('mousemove', this.onMouseMove);
+    this.canvas.addEventListener('touchmove', this.onTouchMove);
+    this.canvas.addEventListener('mousedown', this.onMouseDown);
+    this.canvas.addEventListener('touchstart', this.onTouchStart);
+    this.canvas.addEventListener('mouseup', this.onMouseUp);
+    this.canvas.addEventListener('mouseout', this.onMouseOut);
+    this.canvas.addEventListener('touchend', this.onTouchEnd);
   }
-
+  
   unbindUiActions() {
-    // Desvincular eventos de interacción del usuario
+    if (this.canvas) {
+      this.canvas.removeEventListener('mousemove', this.onMouseMove);
+      this.canvas.removeEventListener('touchmove', this.onTouchMove);
+      this.canvas.removeEventListener('mousedown', this.onMouseDown);
+      this.canvas.removeEventListener('touchstart', this.onTouchStart);
+      this.canvas.removeEventListener('mouseup', this.onMouseUp);
+      this.canvas.removeEventListener('mouseout', this.onMouseOut);
+      this.canvas.removeEventListener('touchend', this.onTouchEnd);
+    }
   }
-
-  onMouseMove(event) {
-    // Lógica de detección de movimiento del ratón
-  }
-
-  onTouchMove(event) {
-    // Lógica de detección de movimiento táctil
-  }
-
-  onMouseDown(event) {
-    // Lógica de mousedown
-  }
-
-  onTouchStart(event) {
-    // Lógica de touchstart
-  }
-
-  onMouseUp(event) {
-    // Lógica de mouseup
-  }
-
-  onMouseOut(event) {
-    // Lógica de mouseout
-  }
-
-  onTouchEnd(event) {
-    // Lógica de touchend
-  }
+  
 
   destroy() {
     // Liberar recursos y desvincular eventos al destruir la animación
@@ -245,21 +363,70 @@ class ParticleNetwork {
   }
 }
 
+// class ParticleNetworkAnimation {
+//   init(element, proyectos) {
+//     this.$el = $(element);
+//     this.projects = Array.from(this.$el.querySelectorAll('.project'));
+//     this.container = element;
+//     this.canvas = document.createElement('canvas');
+//     this.sizeCanvas();
+//     this.container.appendChild(this.canvas);
+//     this.ctx = this.canvas.getContext('2d');
+//     this.particleNetwork = new ParticleNetwork(this, proyectos);
+
+//     this.bindUiActions();
+
+//     return this;
+//   }
+
+
+// }
 class ParticleNetworkAnimation {
-  init(element, proyectos) {
-    this.$el = $(element);
-    this.projects = Array.from(this.$el.querySelectorAll('.project'));
-    this.container = element;
+  constructor() {
+    this.container = null;
+    this.canvas = null;
+    this.ctx = null;
+    this.particleNetwork = null;
+
+    // Agregar un controlador de eventos de redimensionamiento de ventana
+    window.addEventListener('resize', () => {
+      this.handleWindowResize();
+    });
+
+    // Inicializar la animación
+    this.init();
+  }
+
+  init() {
+    // Configurar el contenedor y el canvas
+    this.container = document.querySelector('.particle-network-animation');
     this.canvas = document.createElement('canvas');
     this.sizeCanvas();
     this.container.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
-    this.particleNetwork = new ParticleNetwork(this, proyectos);
+    this.particleNetwork = new ParticleNetwork(this);
 
     this.bindUiActions();
-
-    return this;
   }
 
-  // Resto de los métodos y eventos...
+  handleWindowResize() {
+    // Manejar el evento de redimensionamiento de la ventana
+    this.sizeCanvas();
+    // Además, puedes hacer otras acciones necesarias después de redimensionar aquí
+  }
+
+  sizeCanvas() {
+    // Establecer las dimensiones del canvas en función del tamaño del contenedor
+    this.canvas.width = this.container.offsetWidth;
+    this.canvas.height = this.container.offsetHeight;
+  }
+
+  bindUiActions() {
+    // Manejo de eventos de interacción del usuario
+    // Aquí puedes agregar tus propios manejadores de eventos según tu lógica
+  }
 }
+
+// Uso de la clase
+const particleAnimation = new ParticleNetworkAnimation();
+
