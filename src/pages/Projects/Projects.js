@@ -1,7 +1,7 @@
 import './styles.css';
 import ParticleNetworkAnimation from './particlesNet';
 
-const proyectos = [
+export const proyectos = [
   {
     nombre: 'P1 responsive',
     img: 'proyecto1.png',
@@ -24,16 +24,15 @@ const proyectos = [
   },
   { nombre: 'TPBS', img: 'proyecto5.png', enlace: 'https://app.thepowermba.com/' }
 ];
-const Projects = () => {
+
+export const Projects = () => {
   // Inicializa la animación de partículas
   const animationContainer = document.createElement('div');
   animationContainer.classList.add('particle-network-animation');
   document.body.appendChild(animationContainer);
-  console.log(animationContainer);
-  console.log(proyectos);
+  console.log('1', animationContainer);
+  console.log('2', proyectos);
 
   const particleAnimation = new ParticleNetworkAnimation();
-  particleAnimation.init(animationContainer, proyectos);
+  particleAnimation.init();
 };
-
-export default Projects;

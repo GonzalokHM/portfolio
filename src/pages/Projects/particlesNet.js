@@ -1,3 +1,5 @@
+import {proyectos} from './Projects'
+
 const getLimitedRandom=(min, max, roundToInteger)=> {
   let number = Math.random() * (max - min) + min;
   if (roundToInteger) {
@@ -100,7 +102,7 @@ class Particle {
 }
 
 class ParticleNetwork {
-  constructor(parent) {
+  constructor(parent, proyectos) {
     console.log('Dentro del constructor de ParticleNetwork');
     this.options = {
       velocity: 1,
@@ -123,6 +125,8 @@ class ParticleNetwork {
     this.canvas.addEventListener('mouseup', this.onMouseUp);
     this.canvas.addEventListener('mouseout', this.onMouseOut);
     this.canvas.addEventListener('touchend', this.onTouchEnd);
+
+    this.proyectos = proyectos;
 
     this.createProjectParticles(proyectos);
 
@@ -164,14 +168,16 @@ class ParticleNetwork {
       return projectParticles;
     };
 
-    this.createParticles(true);
+    
+
+    this.createParticles();
     this.animationFrame = requestAnimationFrame(this.update.bind(this));
     this.bindUiActions();
   }
 
- createProjectParticles(proyectos) {
+  createParticles() {
     // Crear partículas de proyecto con imágenes y tamaños adecuados
-    for (const proyecto of proyectos) {
+    for (const proyecto of this.proyectos) {
       if (proyecto.img) {
         proyecto.radius = 40;
         const x = Math.random() * this.canvas.width;
@@ -179,8 +185,18 @@ class ParticleNetwork {
         this.particles.push(new Particle(this, x, y, true, proyecto));
       }
     }
+
+    // Crear partículas normales
+    const numNormalParticles = 100; // Cambia esto según la cantidad deseada de partículas normales
+    for (let i = 0; i < numNormalParticles; i++) {
+      const x = Math.random() * this.canvas.width;
+      const y = Math.random() * this.canvas.height;
+      this.particles.push(new Particle(this, x, y));
+    }
   }
 
+
+  
   connectParticles() {
     for (let i = 0; i < this.particles.length; i++) {
       for (let j = i + 1; j < this.particles.length; j++) {
@@ -358,12 +374,17 @@ class ParticleNetwork {
 }
 
 class ParticleNetworkAnimation {
-  constructor() {
+  constructor(proyectos) {
     console.log('ParticleNetworkAnimation constructor, this:', this);
     this.container = null;
     this.canvas = null;
     this.ctx = null;
     this.particleNetwork = null;
+    this.particles = [];
+    this.mouseIsDown = false;
+    this.touchIsMoving = false;
+    this.spawnQuantity = 3;
+    this.proyectos = proyectos;
 
     // Agregar un controlador de eventos de redimensionamiento de ventana
     window.addEventListener('resize', () => {
