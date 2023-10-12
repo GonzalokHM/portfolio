@@ -2,7 +2,7 @@ import Experience from '../pages/Experience/Experience';
 import fillHomeData from '../pages/Home/FillHomeData';
 import Home from '../pages/Home/Home';
 import NotFound from '../pages/NotFound/NotFound';
-import { Projects } from '../pages/Projects/Projects';
+import Projects from '../pages/Projects/Projects';
 
 //Vamos a crear un array de objetos que incluya la ruta y el componente de cada una de las páginas
 const routes = [

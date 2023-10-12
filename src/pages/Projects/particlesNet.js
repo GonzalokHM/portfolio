@@ -1,4 +1,4 @@
-import {proyectos} from './Projects'
+import proyectos from './projectList'
 
 const getLimitedRandom=(min, max, roundToInteger)=> {
   let number = Math.random() * (max - min) + min;
@@ -26,8 +26,8 @@ class Particle {
       this.resize(proyecto.radius * 2);
     } else {
       // Configuración para partículas normales de fondo
-      this.particleColor = this.returnRandomArrayitem(this.network.options.particleColors);
-      this.radius = this.getLimitedRandom(1.5, 2.5);
+      this.particleColor = returnRandomArrayitem(this.network.options.particleColors);
+      this.radius = getLimitedRandom(1.5, 2.5);
       this.opacity = 0.5;
       this.x = x || Math.random() * this.canvas.width;
       this.y = y || Math.random() * this.canvas.height;
@@ -39,8 +39,7 @@ class Particle {
   }
 
   update() {
-    if (this.isProject && this.proyecto) {
-      // Actualizar la posición de la partícula en relación con el proyecto
+    if (this.proyecto) {
       this.x = this.proyecto.x;
       this.y = this.proyecto.y;
     }
@@ -102,7 +101,7 @@ class Particle {
 }
 
 class ParticleNetwork {
-  constructor(parent, proyectos) {
+  constructor(parent) {
     console.log('Dentro del constructor de ParticleNetwork');
     this.options = {
       velocity: 1,
@@ -130,50 +129,48 @@ class ParticleNetwork {
 
     this.createProjectParticles(proyectos);
 
-    this.createProjectParticles = ()=> {
-      const projectParticles = [];
-      const numProjectParticles = proyectos.length;
-
-      // Tamaño y radio de las partículas-proyecto
-      const projectParticleRadius = 20;
-
-      // Distribuye las partículas-proyecto aleatoriamente sin superponerse
-      for (let i = 0; i < numProjectParticles; i++) {
-        let isOverlapping = false;
-        let projectParticle;
-        do {
-          isOverlapping = false;
-          // Genera una posición aleatoria dentro del contenedor
-          const x = getLimitedRandom(0, this.canvas.width - projectParticleRadius * 2, true);
-          const y = getLimitedRandom(0, this.canvas.height - projectParticleRadius * 2, true);
-
-          // Crea la partícula-proyecto en la posición generada
-          projectParticle = new Particle(this, x, y, true, proyectos[i]);
-
-          // Verifica si se superpone con otras partículas-proyecto
-          for (const existingParticle of projectParticles) {
-            const distance = Math.sqrt(
-              Math.pow(x - existingParticle.x, 2) + Math.pow(y - existingParticle.y, 2)
-            );
-            if (distance < projectParticleRadius * 2) {
-              isOverlapping = true;
-              break;
-            }
-          }
-        } while (isOverlapping);
-        // Agrega la partícula-proyecto al arreglo
-        projectParticles.push(projectParticle);
-      }
-
-      return projectParticles;
-    };
-
-    
-
     this.createParticles();
     this.animationFrame = requestAnimationFrame(this.update.bind(this));
     this.bindUiActions();
   }
+
+  createProjectParticles = ()=> {
+    const projectParticles = [];
+    const numProjectParticles = proyectos.length;
+
+    // Tamaño y radio de las partículas-proyecto
+    const projectParticleRadius = 20;
+
+    // Distribuye las partículas-proyecto aleatoriamente sin superponerse
+    for (let i = 0; i < numProjectParticles; i++) {
+      let isOverlapping = false;
+      let projectParticle;
+      do {
+        isOverlapping = false;
+        // Genera una posición aleatoria dentro del contenedor
+        const x = getLimitedRandom(0, this.canvas.width - projectParticleRadius * 2, true);
+        const y = getLimitedRandom(0, this.canvas.height - projectParticleRadius * 2, true);
+
+        // Crea la partícula-proyecto en la posición generada
+        projectParticle = new Particle(this, x, y, true, proyectos[i]);
+
+        // Verifica si se superpone con otras partículas-proyecto
+        for (const existingParticle of projectParticles) {
+          const distance = Math.sqrt(
+            Math.pow(x - existingParticle.x, 2) + Math.pow(y - existingParticle.y, 2)
+          );
+          if (distance < projectParticleRadius * 2) {
+            isOverlapping = true;
+            break;
+          }
+        }
+      } while (isOverlapping);
+      // Agrega la partícula-proyecto al arreglo
+      projectParticles.push(projectParticle);
+    }
+
+    return projectParticles;
+  };
 
   createParticles() {
     // Crear partículas de proyecto con imágenes y tamaños adecuados
@@ -405,7 +402,7 @@ class ParticleNetworkAnimation {
     this.sizeCanvas();
     this.container.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
-    this.particleNetwork = new ParticleNetwork(this);
+    this.particleNetwork = new ParticleNetwork(this, proyectos);
 
     this.bindUiActions();
   }
