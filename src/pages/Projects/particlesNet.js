@@ -115,6 +115,7 @@ class ParticleNetwork {
     this.particles = [];
     this.mouseIsDown = false;
     this.touchIsMoving = false;
+    this.arrowControlledParticle = null; // Inicialmente, no hay partícula controlada
     this.spawnQuantity = 3;
 
     this.canvas.addEventListener('mousemove', this.onMouseMove);
@@ -124,6 +125,18 @@ class ParticleNetwork {
     this.canvas.addEventListener('mouseup', this.onMouseUp);
     this.canvas.addEventListener('mouseout', this.onMouseOut);
     this.canvas.addEventListener('touchend', this.onTouchEnd);
+
+
+   // Obtener elementos del DOM
+   this.createControlButton = document.querySelector('.particle-network-animation button');
+   this.controlLegend = document.querySelector('.particle-network-animation div');
+ 
+   // Asignar eventos al botón
+   this.createControlButton.addEventListener('click', () => {
+     this.createArrowControlParticle();
+     this.createControlButton.style.display = 'none'; // Ocultar el botón
+     this.controlLegend.style.display = 'block'; // Mostrar la leyenda
+   });
 
     this.proyectos = proyectos;
 
@@ -230,8 +243,18 @@ class ParticleNetwork {
   }
   
   createInteractionParticle() {
-  //delete, implement partivlecontroller...
+  //delete, implement particlecontroller...
   }
+
+  // Método para asignar una partícula para ser controlada
+setArrowControlledParticle(particle) {
+  this.arrowControlledParticle = particle;
+}
+
+// Método para eliminar la partícula controlada
+removeArrowControlledParticle() {
+  this.arrowControlledParticle = null;
+}
   
   
   bindUiActions() {
@@ -307,6 +330,37 @@ class ParticleNetwork {
       this.touchIsMoving = false;
       this.removeInteractionParticle();
     };
+
+    // Controlador de eventos para la tecla presionada
+this.onKeyDown = (e)=> {
+  if (this.arrowControlledParticle && e.key.startsWith('Arrow')) {
+    // Las teclas de flecha están siendo presionadas y tenemos una partícula controlada
+    // Actualiza la velocidad de la partícula basada en la tecla presionada
+    switch (e.key) {
+      case 'ArrowUp':
+        this.arrowControlledParticle.velocity.y = -1; // Mueve hacia arriba
+        break;
+      case 'ArrowDown':
+        this.arrowControlledParticle.velocity.y = 1; // Mueve hacia abajo
+        break;
+      case 'ArrowLeft':
+        this.arrowControlledParticle.velocity.x = -1; // Mueve hacia la izquierda
+        break;
+      case 'ArrowRight':
+        this.arrowControlledParticle.velocity.x = 1; // Mueve hacia la derecha
+        break;
+    }
+  }
+}
+
+// Controlador de eventos para la tecla liberada
+this.onKeyUp=(e)=> {
+  if (this.arrowControlledParticle && e.key.startsWith('Arrow')) {
+    // Las teclas de flecha han sido liberadas, detén el movimiento
+    this.arrowControlledParticle.velocity.x = 0;
+    this.arrowControlledParticle.velocity.y = 0;
+  }
+}
   
     this.canvas.addEventListener('mousemove', this.onMouseMove);
     this.canvas.addEventListener('touchmove', this.onTouchMove);
@@ -348,7 +402,23 @@ class ParticleNetworkAnimation {
     this.mouseIsDown = false;
     this.touchIsMoving = false;
     this.spawnQuantity = 3;
+    this.arrowControlledParticle = null; // Inicialmente, no hay partícula controlada
     this.proyectos = proyectos;
+
+       // Inicializa el botón y la leyenda para el control de partículas
+   this.ControlButton = document.querySelector('.particle-network-animation button');
+   this.controlLegend = document.querySelector('.particle-network-animation div');    
+
+    // Agregar un controlador de eventos al botón
+    this.controlButton.addEventListener('click', () => {
+      this.createArrowControlParticle();
+      this.controlButton.style.display = 'none'; // Oculta el botón
+      this.controlLegend.style.display = 'block'; // Muestra la leyenda
+    });
+
+          // Agregar un controlador de eventos para las teclas de flecha
+  document.addEventListener('keydown', this.onKeyDown.bind(this));
+  document.addEventListener('keyup', this.onKeyUp.bind(this));
 
     // Agregar un controlador de eventos de redimensionamiento de ventana
     window.addEventListener('resize', () => {
@@ -356,10 +426,53 @@ class ParticleNetworkAnimation {
     });
 
 
-    
 
-    // Inicializar la animación
-    this.init();
+   // Inicializar la animación
+   this.init();
+  }
+
+  createArrowControlParticle() {
+    const controlledParticle = new Particle(this, initialX, initialY, false);
+    controlledParticle.isControlled = true; // Podrías usar una bandera para identificar la partícula controlada.
+    this.arrowControlledParticle = controlledParticle;
+  }
+
+  onKeyDown(event) {
+    if (this.arrowControlledParticle) {
+      // El usuario está controlando una partícula
+      if (event.key === 'ArrowUp') {
+        this.arrowControlledParticle.moveUp();
+      } else if (event.key === 'ArrowDown') {
+        this.arrowControlledParticle.moveDown();
+      } else if (event.key === 'ArrowLeft') {
+        this.arrowControlledParticle.moveLeft();
+      } else if (event.key === 'ArrowRight') {
+        this.arrowControlledParticle.moveRight();
+      } else if (event.key === ' ') {
+        // La barra espaciadora para interactuar con partículas proyecto
+        this.interactWithProjectParticles(this.arrowControlledParticle);
+      } else if (event.key === 'Escape') {
+        // Presionar Esc para eliminar la partícula controlada
+        this.removeArrowControlParticle();
+      }
+    }
+  }
+
+  onKeyUp(event) {
+    if (event.key.startsWith('Arrow') && this.arrowControlledParticle) {
+      // Detener el movimiento cuando se suelte la tecla de flecha
+      this.arrowControlledParticle.stopMoving();
+    }
+  }
+
+  removeArrowControlParticle() {
+    // Elimina la partícula controlada
+    this.arrowControlledParticle = null;
+    // Deberías eliminar la representación visual de la partícula controlada si es necesario.
+  }
+
+  interactWithProjectParticles(controlledParticle) {
+    // Lógica para interactuar con las partículas de proyecto cuando se presiona la barra espaciadora.
   }
 
   init() {
