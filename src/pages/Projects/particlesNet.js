@@ -315,7 +315,7 @@ class ParticleNetwork {
 }
 
 class ParticleNetworkAnimation {
-  constructor(proyectos) {
+  constructor() {
     console.log('ParticleNetworkAnimation constructor, this:', this);
     this.container = null;
     this.canvas = null;
@@ -327,17 +327,6 @@ class ParticleNetworkAnimation {
     this.spawnQuantity = 3;
     this.arrowControlledParticle = null; // Inicialmente, no hay partícula controlada
     this.proyectos = proyectos;
-
-    // Inicializa el botón y la leyenda para el control de partículas
-    this.ControlButton = document.querySelector('.particle-network-animation button');
-    this.controlLegend = document.querySelector('.particle-network-animation div');
-
-    // Agregar un controlador de eventos al botón
-    this.controlButton.addEventListener('click', () => {
-      this.createArrowControlParticle();
-      this.controlButton.style.display = 'none'; // Oculta el botón
-      this.controlLegend.style.display = 'block'; // Muestra la leyenda
-    });
 
     // Agregar un controlador de eventos para las teclas de flecha
     document.addEventListener('keydown', this.onKeyDown.bind(this));
@@ -354,6 +343,7 @@ class ParticleNetworkAnimation {
 
   createArrowControlParticle() {
     const button = this.controlButton;
+    console.log('control Button 2',this.ControlButton)
     const buttonRect = button.getBoundingClientRect();
 
     // Calcular las coordenadas iniciales al lado del botón
@@ -366,11 +356,14 @@ class ParticleNetworkAnimation {
   }
 
   interactWithProjectParticles(controlledParticle) {
+
+    const thresholdDistance = 100;
+
     // Iterar a través de las partículas del proyecto y verificar la cercanía
     for (const particle of this.particleNetwork.particles) {
       if (particle.isProject) {
         const distance = this.getDistance(controlledParticle, particle);
-        if (distance <= 100) { // *comprobar si hay que modificar el umbral*
+        if (distance <= thresholdDistance) {
         // Abre la URL del proyecto
         window.open(particle.proyecto.url, '_blank');
           console.log('Interactuando con la partícula del proyecto:', particle.proyecto);
@@ -458,8 +451,31 @@ class ParticleNetworkAnimation {
 
   bindUiActions() {
     // Manejo de eventos de interacción del usuario
+
+     // Inicializa el botón y la leyenda para el control de partículas
+     this.ControlButton = document.querySelector('.controlButton');
+     this.controlLegend = document.querySelector('.controlLegend');
+ 
+     console.log('controlLegend',this.controlLegend)
+     
+     // Agregar un controlador de eventos al botón
+     console.log('control Button 0',this.ControlButton)
+     this.controlButton.addEventListener('click', () => {
+       console.log('control Button 1',this.ControlButton)
+       this.createArrowControlParticle();
+       this.controlButton.style.display = 'none'; // Oculta el botón
+       this.controlLegend.style.display = 'block'; // Muestra la leyenda
+     });
+     
     this.canvas.addEventListener('click', this.onProjectParticleClick.bind(this));
   }
 }
 
-export default ParticleNetworkAnimation;
+const initializeParticleNetworkAnimation = () => {
+  document.addEventListener('DOMContentLoaded', () => {
+    const particleAnimation = new ParticleNetworkAnimation();
+    particleAnimation.init();
+  });
+}
+
+export default initializeParticleNetworkAnimation;

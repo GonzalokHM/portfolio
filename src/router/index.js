@@ -3,6 +3,7 @@ import fillHomeData from '../pages/Home/FillHomeData';
 import Home from '../pages/Home/Home';
 import NotFound from '../pages/NotFound/NotFound';
 import Projects from '../pages/Projects/Projects';
+import initializeParticleNetworkAnimation from '../pages/Projects/particlesNet';
 
 //Vamos a crear un array de objetos que incluya la ruta y el componente de cada una de las páginas
 const routes = [
@@ -34,6 +35,10 @@ export const router = () => {
     if (path === '/home') {
       fillHomeData();
       document.body.classList.add('home-page');
+    }
+    if (path === '/projects') {
+      initializeParticleNetworkAnimation();
+      document.body.classList.add('projects');
     }
   } else {
     document.querySelector('main').innerHTML = NotFound();
