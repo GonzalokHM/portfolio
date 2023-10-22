@@ -263,7 +263,6 @@ class ParticleNetwork {
     };
 
     this.onTouchStart = (e) => {
-      e.preventDefault();
       setTimeout(() => {
         if (!this.touchIsMoving) {
           for (let i = 0; i < this.spawnQuantity; i++) {
@@ -343,7 +342,7 @@ class ParticleNetworkAnimation {
 
   createArrowControlParticle() {
     const button = this.controlButton;
-    console.log('control Button 2',this.ControlButton)
+    console.log('control Button 2',this.controlButton)
     const buttonRect = button.getBoundingClientRect();
 
     // Calcular las coordenadas iniciales al lado del botón
@@ -410,6 +409,7 @@ class ParticleNetworkAnimation {
     // Configurar el contenedor y el canvas
     this.container = document.querySelector('.particle-network-animation');
     this.canvas = document.createElement('canvas');
+    console.log("1",this.canvas)
     this.sizeCanvas();
     this.container.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
@@ -451,17 +451,18 @@ class ParticleNetworkAnimation {
 
   bindUiActions() {
     // Manejo de eventos de interacción del usuario
+    this.canvas.addEventListener('click', this.onProjectParticleClick.bind(this));
 
      // Inicializa el botón y la leyenda para el control de partículas
-     this.ControlButton = document.querySelector('.controlButton');
+     this.controlButton = document.querySelector('.controlButton');
      this.controlLegend = document.querySelector('.controlLegend');
  
      console.log('controlLegend',this.controlLegend)
      
      // Agregar un controlador de eventos al botón
-     console.log('control Button 0',this.ControlButton)
+     console.log('control Button 0',this.controlButton)
      this.controlButton.addEventListener('click', () => {
-       console.log('control Button 1',this.ControlButton)
+       console.log('control Button 1',this.controlButton)
        this.createArrowControlParticle();
        this.controlButton.style.display = 'none'; // Oculta el botón
        this.controlLegend.style.display = 'block'; // Muestra la leyenda
