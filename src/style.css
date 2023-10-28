@@ -44,6 +44,7 @@ a:hover {
 
 main {
   min-height: 80vh;
+  flex: 1; /* Permite que el contenido de 'main' ocupe el espacio restante */
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -62,7 +63,7 @@ main > * {
   }
 
   100% {
-    opacity: 1;
+    opacity: 1; 
   }
 }
 

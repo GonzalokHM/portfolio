@@ -1,0 +1,35 @@
+/* Ajusta el estilo del contenedor para que ocupe toda la ventana */
+.particle-network-animation {
+  position: fixed;
+  width: 100%;
+  height: 80%;
+  background-color: black; /* Opcional: color de fondo del contenedor */
+  overflow: hidden; /* Para que no haya barras de desplazamiento */
+}
+
+
+/* Ajusta el estilo del canvas para que ocupe todo el contenedor */
+canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+}
+
+/* Ajusta el estilo del botón y la leyenda */
+.controlButton {
+  position: absolute;
+  bottom: 10px;
+  left: 10px;
+  z-index: 2; /* Para que esté encima del canvas */
+}
+
+.controlLegend {
+  display: none;
+  position: absolute;
+  bottom: 10px;
+  left: 50px; /* Alineado a la derecha del botón */
+  z-index: 2; /* Para que esté encima del canvas */
+  color: white; /* Opcional: color del texto */
+}

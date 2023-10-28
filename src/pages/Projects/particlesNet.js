@@ -14,16 +14,20 @@ const returnRandomArrayitem = (array) => {
 
 class Particle {
   constructor(parent, x, y, isProject, proyecto) {
+    console.log('===> class Particle');
     this.network = parent;
     this.canvas = parent.canvas;
     this.ctx = parent.ctx;
     this.isProject = isProject || false;
     this.proyecto = proyecto || null;
+    this.isControlled = false;
+    this.controlledSpeed = 5;
 
     if (this.isProject && this.proyecto) {
       // Configuración específica para partículas de proyectos
       this.loadImage(proyecto.img);
       this.resize(proyecto.radius * 2);
+      this.particleColor = returnRandomArrayitem(this.network.options.particleColors);
     } else {
       // Configuración para partículas normales de fondo
       this.particleColor = returnRandomArrayitem(this.network.options.particleColors);
@@ -36,6 +40,45 @@ class Particle {
         y: (Math.random() - 0.5) * parent.options.velocity
       };
     }
+  }
+
+  moveUp() {
+    if (this.isControlled) {
+      this.y -= this.controlledSpeed; // Mueve hacia arriba
+    }
+  }
+
+  moveDown() {
+    if (this.isControlled) {
+      this.y += this.controlledSpeed; // Mueve hacia abajo
+    }
+  }
+
+  moveLeft() {
+    if (this.isControlled) {
+      this.x -= this.controlledSpeed; // Mueve hacia la izquierda
+    }
+  }
+
+  moveRight() {
+    if (this.isControlled) {
+      this.x += this.controlledSpeed; // Mueve hacia la derecha
+    }
+  }
+
+  stopMoving() {
+    this.x = 0;
+    this.y = 0;
+  }
+
+  // Método para asignar una partícula como controlada
+  setControlled() {
+    this.isControlled = true;
+  }
+
+  // Método para eliminar el estado de control de la partícula
+  removeControlled() {
+    this.isControlled = false;
   }
 
   update() {
@@ -58,7 +101,10 @@ class Particle {
 
   draw() {
     this.ctx.beginPath();
-    if (this.isProject && this.proyecto) {
+    if (this.isControlled) {
+      // Dibuja la partícula controlada de manera especial
+      this.ctx.fillStyle = 'red';
+    } else if (this.isProject && this.proyecto) {
       // Si es una partícula de proyecto, dibuja la imagen
       if (this.img) {
         // Calcular las coordenadas de dibujo para ajustar la imagen al tamaño de la partícula
@@ -69,13 +115,14 @@ class Particle {
 
         // Dibuja la imagen dentro de la partícula
         this.ctx.drawImage(this.img, imgX, imgY, imgWidth, imgHeight);
+      return;
       }
     } else {
       this.ctx.fillStyle = this.particleColor;
+    }
       this.ctx.globalAlpha = this.opacity;
       this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
       this.ctx.fill();
-    }
   }
 
   loadImage() {
@@ -87,7 +134,7 @@ class Particle {
     this.img.onerror = (error) => {
       // Manejar errores al cargar la imagen
       console.error('Error al cargar la imagen:', error);
-      // Puedes tomar medidas como mostrar una imagen de reemplazo o registrar el error
+      //mostrar una imagen de reemplazo o registrar el error
     };
     this.img.src = this.proyecto.img;
   }
@@ -100,13 +147,13 @@ class Particle {
 
 class ParticleNetwork {
   constructor(parent) {
-    console.log('Dentro del constructor de ParticleNetwork');
+    console.log('===> class ParticleNetwork');
     this.options = {
       velocity: 1,
       density: 15000,
       netLineDistance: 200,
       netLineColor: '#929292',
-      particleColors: ['#aaa']
+      particleColors: ['#aaa', '#bbb', '#ccc']
     };
     this.canvas = parent.canvas;
     this.ctx = parent.ctx;
@@ -315,7 +362,7 @@ class ParticleNetwork {
 
 class ParticleNetworkAnimation {
   constructor() {
-    console.log('ParticleNetworkAnimation constructor, this:', this);
+    console.log('===> class ParticleNetworkAnimation');
     this.container = null;
     this.canvas = null;
     this.ctx = null;
@@ -335,27 +382,26 @@ class ParticleNetworkAnimation {
     window.addEventListener('resize', () => {
       this.handleWindowResize();
     });
-
     // Inicializar la animación
     this.init();
   }
 
   createArrowControlParticle() {
+    console.log('dentro ==> createArrowControlParticle inicio');
     const button = this.controlButton;
-    console.log('control Button 2',this.controlButton)
     const buttonRect = button.getBoundingClientRect();
 
     // Calcular las coordenadas iniciales al lado del botón
     const initialX = buttonRect.left + buttonRect.width + 10;
     const initialY = buttonRect.top + buttonRect.height / 2;
 
-    const controlledParticle = new Particle(this, initialX, initialY, false);
-    controlledParticle.isControlled = true; // Podrías usar una bandera para identificar la partícula controlada.
+    const controlledParticle = new Particle(this.particleNetwork, initialX, initialY, false);
+    controlledParticle.isControlled = true;
     this.arrowControlledParticle = controlledParticle;
+    console.log('dentro ==> createArrowControlParticle fin');
   }
 
   interactWithProjectParticles(controlledParticle) {
-
     const thresholdDistance = 100;
 
     // Iterar a través de las partículas del proyecto y verificar la cercanía
@@ -363,8 +409,8 @@ class ParticleNetworkAnimation {
       if (particle.isProject) {
         const distance = this.getDistance(controlledParticle, particle);
         if (distance <= thresholdDistance) {
-        // Abre la URL del proyecto
-        window.open(particle.proyecto.url, '_blank');
+          // Abre la URL del proyecto
+          window.open(particle.proyecto.url, '_blank');
           console.log('Interactuando con la partícula del proyecto:', particle.proyecto);
         }
       }
@@ -403,13 +449,15 @@ class ParticleNetworkAnimation {
     // Elimina la partícula controlada
     this.arrowControlledParticle = null;
     // Deberías eliminar la representación visual de la partícula controlada si es necesario.
+
+    this.controlButton.style.display = 'block'; // Oculta el botón
+    this.controlLegend.style.display = 'none'; // Muestra la leyenda
   }
 
   init() {
     // Configurar el contenedor y el canvas
     this.container = document.querySelector('.particle-network-animation');
     this.canvas = document.createElement('canvas');
-    console.log("1",this.canvas)
     this.sizeCanvas();
     this.container.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
@@ -453,30 +501,26 @@ class ParticleNetworkAnimation {
     // Manejo de eventos de interacción del usuario
     this.canvas.addEventListener('click', this.onProjectParticleClick.bind(this));
 
-     // Inicializa el botón y la leyenda para el control de partículas
-     this.controlButton = document.querySelector('.controlButton');
-     this.controlLegend = document.querySelector('.controlLegend');
- 
-     console.log('controlLegend',this.controlLegend)
-     
-     // Agregar un controlador de eventos al botón
-     console.log('control Button 0',this.controlButton)
-     this.controlButton.addEventListener('click', () => {
-       console.log('control Button 1',this.controlButton)
-       this.createArrowControlParticle();
-       this.controlButton.style.display = 'none'; // Oculta el botón
-       this.controlLegend.style.display = 'block'; // Muestra la leyenda
-     });
-     
+    // Inicializa el botón y la leyenda para el control de partículas
+    this.controlButton = document.querySelector('.controlButton');
+    this.controlLegend = document.querySelector('.controlLegend');
+
+    // Agregar un controlador de eventos al botón
+    this.controlButton.addEventListener('click', () => {
+      console.log('control Button check');
+      this.createArrowControlParticle();
+      console.log('==> despues createArrowControlParticle, dentro addEventLisener');
+      this.controlButton.style.display = 'none'; // Oculta el botón
+      this.controlLegend.style.display = 'block'; // Muestra la leyenda
+    });
+
     this.canvas.addEventListener('click', this.onProjectParticleClick.bind(this));
   }
 }
 
 const initializeParticleNetworkAnimation = () => {
-  document.addEventListener('DOMContentLoaded', () => {
-    const particleAnimation = new ParticleNetworkAnimation();
-    particleAnimation.init();
-  });
-}
+  const particleAnimation = new ParticleNetworkAnimation();
+  particleAnimation.init();
+};
 
 export default initializeParticleNetworkAnimation;
