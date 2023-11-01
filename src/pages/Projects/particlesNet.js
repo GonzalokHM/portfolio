@@ -14,7 +14,6 @@ const returnRandomArrayitem = (array) => {
 
 class Particle {
   constructor(parent, x, y, isProject, proyecto) {
-    console.log('===> class Particle');
     this.network = parent;
     this.canvas = parent.canvas;
     this.ctx = parent.ctx;
@@ -27,11 +26,23 @@ class Particle {
       // Configuración específica para partículas de proyectos
       this.loadImage(proyecto.img);
       this.resize(proyecto.radius * 2);
-      this.particleColor = returnRandomArrayitem(this.network.options.particleColors);
-    } else {
+      this.particleColor = proyecto.color;
+      this.velocity = {
+        x: (Math.random() - 0.5) * parent.options.velocity,
+        y: (Math.random() - 0.5) * parent.options.velocity}
+      this.x = x 
+      this.y = y
+        // Define los límites de la zona de movimiento basados en la posición de creación
+        this.moveArea = {
+          x: x - 10,
+          y: y - 10,
+          width: 40,
+          height: 40
+        };
+    } else if (!this.isProject && !this.isControlled){
       // Configuración para partículas normales de fondo
       this.particleColor = returnRandomArrayitem(this.network.options.particleColors);
-      this.radius = getLimitedRandom(1.5, 2.5);
+      this.radius = getLimitedRandom(5.5, 8.5);
       this.opacity = 0.5;
       this.x = x || Math.random() * this.canvas.width;
       this.y = y || Math.random() * this.canvas.height;
@@ -39,7 +50,14 @@ class Particle {
         x: (Math.random() - 0.5) * parent.options.velocity,
         y: (Math.random() - 0.5) * parent.options.velocity
       };
+        this.moveArea = {
+          x: 0,
+          y: 0,
+          width: this.canvas.width,
+          height: this.canvas.height,
+        };
     }
+    // console.log('Move Area:', this.moveArea);
   }
 
   moveUp() {
@@ -87,24 +105,34 @@ class Particle {
     } else {
       this.opacity = 1;
     }
-    if (!this.isProject) {
-      if (this.x > this.canvas.width + 100 || this.x < -100) {
+    if (!this.isProject && !this.isControlled) {
+      if (this.x > this.canvas.width || this.x < 0) {
         this.velocity.x = -this.velocity.x;
       }
-      if (this.y > this.canvas.height + 100 || this.y < -100) {
+      if (this.y > this.canvas.height || this.y < 0) {
         this.velocity.y = -this.velocity.y;
       }
       this.x += this.velocity.x;
       this.y += this.velocity.y;
     }
+    else if(this.isProject && this.proyecto){
+     // Si es una partícula de proyecto, mueve la partícula dentro de su zona
+      this.x = Math.min(this.moveArea.x + this.moveArea.width, Math.max(this.moveArea.x, this.x + this.velocity.x));
+      this.y = Math.min(this.moveArea.y + this.moveArea.height, Math.max(this.moveArea.y, this.y + this.velocity.y));
+
+    }
   }
 
   draw() {
     this.ctx.beginPath();
+    console.log(this.isProject)
+    console.log(this.proyecto)
     if (this.isControlled) {
       // Dibuja la partícula controlada de manera especial
+      console.log('iscontrolled====>',this.isControlled)
       this.ctx.fillStyle = 'red';
     } else if (this.isProject && this.proyecto) {
+      console.log('>>>>>>>>>>draw---proyects<<<<<<')
       // Si es una partícula de proyecto, dibuja la imagen
       if (this.img) {
         // Calcular las coordenadas de dibujo para ajustar la imagen al tamaño de la partícula
@@ -112,8 +140,9 @@ class Particle {
         const imgY = this.y - this.radius;
         const imgWidth = this.radius * 2;
         const imgHeight = this.radius * 2;
-
         // Dibuja la imagen dentro de la partícula
+        console.log('>>>>>>>>>>draw--create-img-proyects<<<<<<')
+
         this.ctx.drawImage(this.img, imgX, imgY, imgWidth, imgHeight);
       return;
       }
@@ -126,6 +155,8 @@ class Particle {
   }
 
   loadImage() {
+    const x = this.x;
+    const y = this.y;
     // Cargar la imagen de proyecto
     this.img = new Image();
     this.img.onload = () => {
@@ -147,7 +178,6 @@ class Particle {
 
 class ParticleNetwork {
   constructor(parent) {
-    console.log('===> class ParticleNetwork');
     this.options = {
       velocity: 1,
       density: 15000,
@@ -163,8 +193,7 @@ class ParticleNetwork {
     this.arrowControlledParticle = null; // Inicialmente, no hay partícula controlada
     this.spawnQuantity = 3;
 
-    this.canvas.addEventListener('mousemove', this.onMouseMove);
-    this.canvas.addEventListener('touchmove', this.onTouchMove);
+
     this.canvas.addEventListener('mousedown', this.onMouseDown);
     this.canvas.addEventListener('touchstart', this.onTouchStart);
     this.canvas.addEventListener('mouseup', this.onMouseUp);
@@ -173,7 +202,7 @@ class ParticleNetwork {
 
     this.proyectos = proyectos;
 
-    this.createProjectParticles(proyectos);
+    // this.createProjectParticles();
 
     this.createParticles();
     this.animationFrame = requestAnimationFrame(this.update.bind(this));
@@ -183,38 +212,51 @@ class ParticleNetwork {
   createProjectParticles() {
     const projectParticles = [];
     const numProjectParticles = this.proyectos.length;
-
-    // Tamaño y radio de las partículas-proyecto
-    const projectParticleRadius = 20;
     const containerWidth = this.canvas.width;
     const containerHeight = this.canvas.height;
-    const horizontalSpacing = containerWidth / (numProjectParticles + 1);
-    const verticalCenter = containerHeight / 2;
-
-    // Distribuir las partículas-proyecto a lo largo del ancho del contenedor
-    for (let i = 0; i < numProjectParticles; i++) {
-      const x = (i + 1) * horizontalSpacing;
-      const y = verticalCenter;
-      const projectParticle = new Particle(this, x, y, true, this.proyectos[i]);
-      projectParticles.push(projectParticle);
+  
+    let numRows = 1; // Número inicial de filas
+  
+    if (containerWidth >= 768 && containerWidth < 1024) {
+      numRows = 2; // Tablet: 2 filas
+    } else if (containerWidth < 768) {
+      numRows = 5; // Móvil: 5 filas
     }
+  
+    const numCols = Math.ceil(numProjectParticles / numRows);
+  
+    const horizontalSpacing = containerWidth / (numCols + 1);
+    const verticalSpacing = containerHeight / (numRows + 1);
+  
+    for (let i = 0; i < numProjectParticles; i++) {
+      const colIndex = i % numCols;
+      const rowIndex = Math.floor(i / numCols);
+      const x = (colIndex + 1) * horizontalSpacing;
+      const y = (rowIndex + 1) * verticalSpacing;
+  
+        // Crear la partícula de proyecto con imagen y tamaño adecuado
+        const proyecto = this.proyectos[i];
+        console.log('>>>>>>>>>>this.particles<<<<<<',this.particles)
 
+          proyecto.radius = 40;
+          const projectParticle = new Particle(this, x, y, true, proyecto);
+          projectParticles.push(projectParticle);
+    
+          // Además, crear las partículas de proyecto con imágenes y tamaños adecuados
+          this.particles.push(projectParticle);
+          console.log('<<<<2>>>>>>>>>>this.particles<<<<<<',this.particles)
+
+      console.log('Partícula de proyecto creada en x:', x, 'y:', y);
+    }
+  
     return projectParticles;
   }
+  
 
   createParticles() {
-    // Crear partículas de proyecto con imágenes y tamaños adecuados
-    for (const proyecto of this.proyectos) {
-      if (proyecto.img) {
-        proyecto.radius = 40;
-        const x = Math.random() * this.canvas.width;
-        const y = Math.random() * this.canvas.height;
-        this.particles.push(new Particle(this, x, y, true, proyecto));
-      }
-    }
 
     // Crear partículas normales
-    const numNormalParticles = 100; // Cambia esto según la cantidad deseada de partículas normales
+    const numNormalParticles = 100;
     for (let i = 0; i < numNormalParticles; i++) {
       const x = Math.random() * this.canvas.width;
       const y = Math.random() * this.canvas.height;
@@ -284,10 +326,6 @@ class ParticleNetwork {
     this.mouseIsDown = false;
     this.touchIsMoving = false;
 
-    this.onMouseMove = (e) => {
-      console.log('Dentro de onMouseMove');
-    };
-
     this.onTouchMove = (e) => {
       e.preventDefault();
       this.touchIsMoving = true;
@@ -332,7 +370,6 @@ class ParticleNetwork {
       this.touchIsMoving = false;
     };
 
-    this.canvas.addEventListener('mousemove', this.onMouseMove);
     this.canvas.addEventListener('touchmove', this.onTouchMove);
     this.canvas.addEventListener('mousedown', this.onMouseDown);
     this.canvas.addEventListener('touchstart', this.onTouchStart);
@@ -343,7 +380,6 @@ class ParticleNetwork {
 
   unbindUiActions() {
     if (this.canvas) {
-      this.canvas.removeEventListener('mousemove', this.onMouseMove);
       this.canvas.removeEventListener('touchmove', this.onTouchMove);
       this.canvas.removeEventListener('mousedown', this.onMouseDown);
       this.canvas.removeEventListener('touchstart', this.onTouchStart);
@@ -362,7 +398,6 @@ class ParticleNetwork {
 
 class ParticleNetworkAnimation {
   constructor() {
-    console.log('===> class ParticleNetworkAnimation');
     this.container = null;
     this.canvas = null;
     this.ctx = null;
@@ -371,7 +406,7 @@ class ParticleNetworkAnimation {
     this.mouseIsDown = false;
     this.touchIsMoving = false;
     this.spawnQuantity = 3;
-    this.arrowControlledParticle = null; // Inicialmente, no hay partícula controlada
+    this.arrowControlledParticle = null;
     this.proyectos = proyectos;
 
     // Agregar un controlador de eventos para las teclas de flecha
@@ -387,7 +422,7 @@ class ParticleNetworkAnimation {
   }
 
   createArrowControlParticle() {
-    console.log('dentro ==> createArrowControlParticle inicio');
+    console.log('===>>> dentro de createArrowControlParticle')
     const button = this.controlButton;
     const buttonRect = button.getBoundingClientRect();
 
@@ -398,7 +433,7 @@ class ParticleNetworkAnimation {
     const controlledParticle = new Particle(this.particleNetwork, initialX, initialY, false);
     controlledParticle.isControlled = true;
     this.arrowControlledParticle = controlledParticle;
-    console.log('dentro ==> createArrowControlParticle fin');
+    console.log('<<<<<<=== dentro de createArrowControlParticle')
   }
 
   interactWithProjectParticles(controlledParticle) {
@@ -462,6 +497,7 @@ class ParticleNetworkAnimation {
     this.container.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
     this.particleNetwork = new ParticleNetwork(this, proyectos);
+    this.particleNetwork.createProjectParticles();
 
     this.bindUiActions();
   }
@@ -507,9 +543,7 @@ class ParticleNetworkAnimation {
 
     // Agregar un controlador de eventos al botón
     this.controlButton.addEventListener('click', () => {
-      console.log('control Button check');
       this.createArrowControlParticle();
-      console.log('==> despues createArrowControlParticle, dentro addEventLisener');
       this.controlButton.style.display = 'none'; // Oculta el botón
       this.controlLegend.style.display = 'block'; // Muestra la leyenda
     });

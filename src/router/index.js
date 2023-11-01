@@ -37,9 +37,7 @@ export const router = () => {
       document.body.classList.add('home-page');
     }
     if (path === '/projects') {
-      console.log('Llamando a initializeParticleNetworkAnimation');
       initializeParticleNetworkAnimation();
-      console.log('Llamado initializeParticleNetworkAnimation');
       document.body.classList.add('projects');
     }
   } else {
@@ -52,7 +50,6 @@ window.addEventListener('popstate', router);
 
 //Vamos a añadirle un evento DomContentLoaded al documento para cargar la página cada vez que se actualice el contenido del main
 document.addEventListener('DOMContentLoaded', router);
-console.log('DOMContentLoaded registrado');
 
 //Vamos a encapsular los listeners en una función para que se lancen después del router y le de tiempo a encontrar los anchors
 export const addListeners = () => {
