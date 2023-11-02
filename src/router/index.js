@@ -37,6 +37,7 @@ export const router = () => {
       document.body.classList.add('home-page');
     }
     if (path === '/projects') {
+      console.log('initializeParticleNetworkAnimation > router')
       initializeParticleNetworkAnimation();
       document.body.classList.add('projects');
     }

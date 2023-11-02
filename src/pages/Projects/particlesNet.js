@@ -120,19 +120,25 @@ class Particle {
       this.x = Math.min(this.moveArea.x + this.moveArea.width, Math.max(this.moveArea.x, this.x + this.velocity.x));
       this.y = Math.min(this.moveArea.y + this.moveArea.height, Math.max(this.moveArea.y, this.y + this.velocity.y));
 
+        // Comprueba si la partícula choca con el borde y, en ese caso, invierte la dirección de la velocidad
+  if (this.x === this.moveArea.x + this.radius || this.x === this.moveArea.x + this.moveArea.width - this.radius) {
+    this.velocity.x *= -1;
+  }
+
+  if (this.y === this.moveArea.y + this.radius || this.y === this.moveArea.y + this.moveArea.height - this.radius) {
+    this.velocity.y *= -1;
+  }
+
     }
   }
 
   draw() {
     this.ctx.beginPath();
-    console.log(this.isProject)
-    console.log(this.proyecto)
     if (this.isControlled) {
       // Dibuja la partícula controlada de manera especial
       console.log('iscontrolled====>',this.isControlled)
       this.ctx.fillStyle = 'red';
     } else if (this.isProject && this.proyecto) {
-      console.log('>>>>>>>>>>draw---proyects<<<<<<')
       // Si es una partícula de proyecto, dibuja la imagen
       if (this.img) {
         // Calcular las coordenadas de dibujo para ajustar la imagen al tamaño de la partícula
@@ -141,8 +147,6 @@ class Particle {
         const imgWidth = this.radius * 2;
         const imgHeight = this.radius * 2;
         // Dibuja la imagen dentro de la partícula
-        console.log('>>>>>>>>>>draw--create-img-proyects<<<<<<')
-
         this.ctx.drawImage(this.img, imgX, imgY, imgWidth, imgHeight);
       return;
       }
@@ -178,6 +182,7 @@ class Particle {
 
 class ParticleNetwork {
   constructor(parent) {
+    console.log('ParticleNetwork')
     this.options = {
       velocity: 1,
       density: 15000,
@@ -202,7 +207,7 @@ class ParticleNetwork {
 
     this.proyectos = proyectos;
 
-    // this.createProjectParticles();
+    this.createProjectParticles();
 
     this.createParticles();
     this.animationFrame = requestAnimationFrame(this.update.bind(this));
@@ -236,7 +241,6 @@ class ParticleNetwork {
   
         // Crear la partícula de proyecto con imagen y tamaño adecuado
         const proyecto = this.proyectos[i];
-        console.log('>>>>>>>>>>this.particles<<<<<<',this.particles)
 
           proyecto.radius = 40;
           const projectParticle = new Particle(this, x, y, true, proyecto);
@@ -244,9 +248,6 @@ class ParticleNetwork {
     
           // Además, crear las partículas de proyecto con imágenes y tamaños adecuados
           this.particles.push(projectParticle);
-          console.log('<<<<2>>>>>>>>>>this.particles<<<<<<',this.particles)
-
-      console.log('Partícula de proyecto creada en x:', x, 'y:', y);
     }
   
     return projectParticles;
@@ -496,8 +497,7 @@ class ParticleNetworkAnimation {
     this.sizeCanvas();
     this.container.appendChild(this.canvas);
     this.ctx = this.canvas.getContext('2d');
-    this.particleNetwork = new ParticleNetwork(this, proyectos);
-    this.particleNetwork.createProjectParticles();
+    this.particleNetwork = new ParticleNetwork(this);
 
     this.bindUiActions();
   }
@@ -517,6 +517,8 @@ class ParticleNetworkAnimation {
     const clickX = e.offsetX;
     const clickY = e.offsetY;
 
+    console.log('Clic en X:', clickX, 'Y:', clickY);
+
     // Iterar a través de las partículas y verificar si el clic está dentro de alguna partícula-proyecto
     for (const particle of this.particleNetwork.particles) {
       if (particle.isProject) {
@@ -524,8 +526,12 @@ class ParticleNetworkAnimation {
         const dy = clickY - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
+
+        console.log('Distancia:', distance);
+
         // Si el clic está dentro de una partícula-proyecto, abrir la URL del proyecto
         if (distance <= particle.radius) {
+          console.log('Clic dentro de la partícula:', particle);
           window.open(particle.proyecto.url, '_blank');
           break; // Salir del bucle una vez que se abra la URL
         }
@@ -547,14 +553,12 @@ class ParticleNetworkAnimation {
       this.controlButton.style.display = 'none'; // Oculta el botón
       this.controlLegend.style.display = 'block'; // Muestra la leyenda
     });
-
-    this.canvas.addEventListener('click', this.onProjectParticleClick.bind(this));
   }
 }
+// let isParticleNetworkInitialized = false;
 
 const initializeParticleNetworkAnimation = () => {
-  const particleAnimation = new ParticleNetworkAnimation();
-  particleAnimation.init();
+  new ParticleNetworkAnimation
 };
 
 export default initializeParticleNetworkAnimation;
