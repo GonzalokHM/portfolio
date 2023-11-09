@@ -33,3 +33,7 @@ canvas {
   z-index: 2; /* Para que esté encima del canvas */
   color: white; /* Opcional: color del texto */
 }
+
+canvas img{
+  border-radius: 50px;
+}

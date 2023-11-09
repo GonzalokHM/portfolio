@@ -87,8 +87,11 @@ main > * {
   margin-right: 1.5rem;
 }
 }
-
-
+@media screen and (max-width: 500px) {
+header{
+  gap: 0.5rem;
+}
+}
 
 @media screen and (max-width: 501px) {
   header{

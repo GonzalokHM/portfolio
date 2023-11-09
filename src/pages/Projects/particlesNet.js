@@ -12,36 +12,41 @@ const returnRandomArrayitem = (array) => {
   return array[Math.floor(Math.random() * array.length)];
 };
 
+let arrowUpKeyPressed = false;
+let arrowDownKeyPressed = false;
+let arrowLeftKeyPressed = false;
+let arrowRightKeyPressed = false;
+
 class Particle {
-  constructor(parent, x, y, isProject, proyecto) {
+  constructor(parent, x, y, isProject, proyecto, isControlled) {
     this.network = parent;
     this.canvas = parent.canvas;
     this.ctx = parent.ctx;
     this.isProject = isProject || false;
     this.proyecto = proyecto || null;
-    this.isControlled = false;
+    this.isControlled = isControlled || false;
     this.controlledSpeed = 5;
+
 
     if (this.isProject && this.proyecto) {
       // Configuración específica para partículas de proyectos
       this.loadImage(proyecto.img);
-      this.resize(proyecto.radius * 2);
-      this.particleColor = proyecto.color;
+      this.radius=35  
       this.velocity = {
         x: (Math.random() - 0.5) * parent.options.velocity,
-        y: (Math.random() - 0.5) * parent.options.velocity}
-      this.x = x 
-      this.y = y
-        // Define los límites de la zona de movimiento basados en la posición de creación
-        this.moveArea = {
-          x: x - 10,
-          y: y - 10,
-          width: 40,
-          height: 40
-        };
-    } else if (!this.isProject && !this.isControlled){
+        y: (Math.random() - 0.5) * parent.options.velocity
+      };
+      this.x = x;
+      this.y = y;
+      // Define los límites de la zona de movimiento basados en la posición de creación
+      this.moveArea = {
+        x: x - 10,
+        y: y - 10,
+        width: 80,
+        height: 80
+      };
+    } else if (!this.isProject && !this.isControlled) {
       // Configuración para partículas normales de fondo
-      this.particleColor = returnRandomArrayitem(this.network.options.particleColors);
       this.radius = getLimitedRandom(5.5, 8.5);
       this.opacity = 0.5;
       this.x = x || Math.random() * this.canvas.width;
@@ -50,55 +55,25 @@ class Particle {
         x: (Math.random() - 0.5) * parent.options.velocity,
         y: (Math.random() - 0.5) * parent.options.velocity
       };
-        this.moveArea = {
-          x: 0,
-          y: 0,
-          width: this.canvas.width,
-          height: this.canvas.height,
-        };
-    }
-    // console.log('Move Area:', this.moveArea);
-  }
-
-  moveUp() {
-    if (this.isControlled) {
-      this.y -= this.controlledSpeed; // Mueve hacia arriba
-    }
-  }
-
-  moveDown() {
-    if (this.isControlled) {
-      this.y += this.controlledSpeed; // Mueve hacia abajo
+      this.moveArea = {
+        x: 0,
+        y: 0,
+        width: this.canvas.width,
+        height: this.canvas.height
+      };
+    } else if (this.isControlled) {
+      this.particleColor = returnRandomArrayitem(this.network.options.particleColors);
+      this.radius = 15;
+      this.x=x
+      this.y=y
+      this.moveArea = {
+        x: 0,
+        y: 0,
+        width: this.canvas.width,
+        height: this.canvas.height}
     }
   }
-
-  moveLeft() {
-    if (this.isControlled) {
-      this.x -= this.controlledSpeed; // Mueve hacia la izquierda
-    }
-  }
-
-  moveRight() {
-    if (this.isControlled) {
-      this.x += this.controlledSpeed; // Mueve hacia la derecha
-    }
-  }
-
-  stopMoving() {
-    this.x = 0;
-    this.y = 0;
-  }
-
-  // Método para asignar una partícula como controlada
-  setControlled() {
-    this.isControlled = true;
-  }
-
-  // Método para eliminar el estado de control de la partícula
-  removeControlled() {
-    this.isControlled = false;
-  }
-
+  
   update() {
     if (this.opacity < 1) {
       this.opacity += 0.01;
@@ -114,31 +89,64 @@ class Particle {
       }
       this.x += this.velocity.x;
       this.y += this.velocity.y;
+    } 
+    
+    else if (this.isProject && this.proyecto) {
+      // Si es una partícula de proyecto, mueve la partícula dentro de su zona
+      this.x = Math.min(
+        this.moveArea.x + this.moveArea.width,
+        Math.max(this.moveArea.x, this.x + this.velocity.x)
+      );
+      this.y = Math.min(
+        this.moveArea.y + this.moveArea.height,
+        Math.max(this.moveArea.y, this.y + this.velocity.y)
+      );
+
+      // Comprueba si la partícula choca con el borde y, en ese caso, invierte la dirección de la velocidad
+      if (
+        this.x === this.moveArea.x + this.radius ||
+        this.x === this.moveArea.x + this.moveArea.width - this.radius
+      ) {
+        this.velocity.x *= -1;
+      }
+
+      if (
+        this.y === this.moveArea.y + this.radius ||
+        this.y === this.moveArea.y + this.moveArea.height - this.radius
+      ) {
+        this.velocity.y *= -1;
+      }
     }
-    else if(this.isProject && this.proyecto){
-     // Si es una partícula de proyecto, mueve la partícula dentro de su zona
-      this.x = Math.min(this.moveArea.x + this.moveArea.width, Math.max(this.moveArea.x, this.x + this.velocity.x));
-      this.y = Math.min(this.moveArea.y + this.moveArea.height, Math.max(this.moveArea.y, this.y + this.velocity.y));
 
-        // Comprueba si la partícula choca con el borde y, en ese caso, invierte la dirección de la velocidad
-  if (this.x === this.moveArea.x + this.radius || this.x === this.moveArea.x + this.moveArea.width - this.radius) {
-    this.velocity.x *= -1;
-  }
-
-  if (this.y === this.moveArea.y + this.radius || this.y === this.moveArea.y + this.moveArea.height - this.radius) {
-    this.velocity.y *= -1;
-  }
-
+    else if (this.isControlled) {
+      if (this.isControlled) {
+        if(arrowUpKeyPressed){
+          this.y -= this.controlledSpeed; // Mueve hacia arriba
+        }
+        if(arrowDownKeyPressed){
+          this.y += this.controlledSpeed; // Mueve hacia abajo
+        }
+        if(arrowLeftKeyPressed){
+          this.x -= this.controlledSpeed; // Mueve hacia la izquierda
+        }
+        if(arrowRightKeyPressed){
+          this.x += this.controlledSpeed; // Mueve hacia la derecha
+        }
+        if(arrowUpKeyPressed){
+          this.y -= this.controlledSpeed; // Mueve hacia arriba
+        }
+      }
     }
   }
 
   draw() {
     this.ctx.beginPath();
+
     if (this.isControlled) {
       // Dibuja la partícula controlada de manera especial
-      console.log('iscontrolled====>',this.isControlled)
-      this.ctx.fillStyle = 'red';
-    } else if (this.isProject && this.proyecto) {
+      this.ctx.fillStyle = this.particleColor;
+    }
+     if (this.isProject && this.proyecto) {
       // Si es una partícula de proyecto, dibuja la imagen
       if (this.img) {
         // Calcular las coordenadas de dibujo para ajustar la imagen al tamaño de la partícula
@@ -148,14 +156,14 @@ class Particle {
         const imgHeight = this.radius * 2;
         // Dibuja la imagen dentro de la partícula
         this.ctx.drawImage(this.img, imgX, imgY, imgWidth, imgHeight);
-      return;
+        return;
       }
-    } else {
-      this.ctx.fillStyle = this.particleColor;
+    } else if(!this.isProject && !this.isControlled){
+      this.ctx.fillStyle = 'white';
     }
-      this.ctx.globalAlpha = this.opacity;
-      this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
-      this.ctx.fill();
+    this.ctx.globalAlpha = this.opacity;
+    this.ctx.arc(this.x, this.y, this.radius, 0, 2 * Math.PI);
+    this.ctx.fill();
   }
 
   loadImage() {
@@ -173,42 +181,36 @@ class Particle {
     };
     this.img.src = this.proyecto.img;
   }
-
-  resize(newSize) {
-    // Redimensionar la partícula de proyecto
-    this.radius = newSize / 2;
-  }
 }
 
 class ParticleNetwork {
   constructor(parent) {
-    console.log('ParticleNetwork')
     this.options = {
       velocity: 1,
       density: 15000,
       netLineDistance: 200,
       netLineColor: '#929292',
-      particleColors: ['#aaa', '#bbb', '#ccc']
+      particleColors: ['aaa', 'bbb', 'ccc']
     };
     this.canvas = parent.canvas;
     this.ctx = parent.ctx;
     this.particles = [];
     this.mouseIsDown = false;
     this.touchIsMoving = false;
-    this.arrowControlledParticle = null; // Inicialmente, no hay partícula controlada
+    this.arrowControlledParticle = null;
     this.spawnQuantity = 3;
-
-
-    this.canvas.addEventListener('mousedown', this.onMouseDown);
-    this.canvas.addEventListener('touchstart', this.onTouchStart);
-    this.canvas.addEventListener('mouseup', this.onMouseUp);
-    this.canvas.addEventListener('mouseout', this.onMouseOut);
-    this.canvas.addEventListener('touchend', this.onTouchEnd);
 
     this.proyectos = proyectos;
 
-    this.createProjectParticles();
+        // Inicializa el botón y la leyenda para el control de partículas
+        this.controlButton = document.querySelector('.controlButton');
+        this.controlLegend = document.querySelector('.controlLegend');
 
+        // Agregar un controlador de eventos para las teclas de flecha
+        document.addEventListener('keydown', this.onKeyDown.bind(this));
+        document.addEventListener('keyup', this.onKeyUp.bind(this));
+
+    this.createProjectParticles();
     this.createParticles();
     this.animationFrame = requestAnimationFrame(this.update.bind(this));
     this.bindUiActions();
@@ -219,50 +221,73 @@ class ParticleNetwork {
     const numProjectParticles = this.proyectos.length;
     const containerWidth = this.canvas.width;
     const containerHeight = this.canvas.height;
-  
+
     let numRows = 1; // Número inicial de filas
-  
+
     if (containerWidth >= 768 && containerWidth < 1024) {
       numRows = 2; // Tablet: 2 filas
     } else if (containerWidth < 768) {
       numRows = 5; // Móvil: 5 filas
     }
-  
+
     const numCols = Math.ceil(numProjectParticles / numRows);
-  
+
     const horizontalSpacing = containerWidth / (numCols + 1);
     const verticalSpacing = containerHeight / (numRows + 1);
-  
+
     for (let i = 0; i < numProjectParticles; i++) {
       const colIndex = i % numCols;
       const rowIndex = Math.floor(i / numCols);
       const x = (colIndex + 1) * horizontalSpacing;
       const y = (rowIndex + 1) * verticalSpacing;
-  
-        // Crear la partícula de proyecto con imagen y tamaño adecuado
-        const proyecto = this.proyectos[i];
 
-          proyecto.radius = 40;
-          const projectParticle = new Particle(this, x, y, true, proyecto);
-          projectParticles.push(projectParticle);
-    
-          // Además, crear las partículas de proyecto con imágenes y tamaños adecuados
-          this.particles.push(projectParticle);
+      // Crear la partícula de proyecto con imagen y tamaño adecuado
+      const proyecto = this.proyectos[i];
+
+      proyecto.radius = 40;
+      const projectParticle = new Particle(this, x, y, true, proyecto);
+      projectParticles.push(projectParticle);
+
+      // Además, crear las partículas de proyecto con imágenes y tamaños adecuados
+      this.particles.push(projectParticle);
     }
-  
+
     return projectParticles;
   }
-  
 
   createParticles() {
-
     // Crear partículas normales
-    const numNormalParticles = 100;
+    const numNormalParticles = 2; //cambiaaar cuando se debuge por competo!!!!!!!!!!
     for (let i = 0; i < numNormalParticles; i++) {
       const x = Math.random() * this.canvas.width;
       const y = Math.random() * this.canvas.height;
       this.particles.push(new Particle(this, x, y));
     }
+  }
+
+  createArrowControlledParticle(event) {
+    const button = this.controlButton;
+
+    // Calcular las coordenadas iniciales al lado del botón
+    const x = event.clientX + 5; // Añade 5 al valor X actual del ratón
+    const y = event.clientY; // Mantén el valor Y actual del ratón
+
+    this.isControlled = true;
+     // Configura la partícula controlada
+  const controlledParticle = new Particle(
+      this,
+      x,
+      y,
+      false,
+      null,
+      this.isControlled
+    );
+    // Establece la partícula controlada
+  this.arrowControlledParticle = controlledParticle;
+
+  // Agrega la partícula a la lista de partículas
+  this.particles.push(controlledParticle);
+  
   }
 
   connectParticles() {
@@ -304,7 +329,14 @@ class ParticleNetwork {
     this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
     this.connectParticles();
 
+    if (this.arrowControlledParticle) {
+      // Permitir que la partícula controlada se mueva
+      this.arrowControlledParticle.update();
+    }
+
     this.particles.forEach((particle) => {
+      if (particle.isControlled) {
+      }
       particle.update();
       particle.draw();
     });
@@ -312,14 +344,73 @@ class ParticleNetwork {
     this.animationFrame = requestAnimationFrame(this.update.bind(this));
   }
 
-  // Método para asignar una partícula para ser controlada
-  setArrowControlledParticle(particle) {
-    this.arrowControlledParticle = particle;
+
+
+  onKeyDown(event) {
+    if (this.arrowControlledParticle) {
+      // El usuario está controlando una partícula
+      if (event.key === 'ArrowUp') {
+        arrowUpKeyPressed = true;
+      } else if (event.key === 'ArrowDown') {
+        arrowDownKeyPressed = true;
+      } else if (event.key === 'ArrowLeft') {
+        arrowLeftKeyPressed = true;
+      } else if (event.key === 'ArrowRight') {
+        arrowRightKeyPressed = true;
+      }// La barra espaciadora para interactuar con partículas proyecto
+        else if (event.key === ' ') {
+        this.interactWithProjectParticles();
+      } // Presionar Esc para eliminar la partícula controlada
+        else if (event.key === 'Escape') {
+        this.removeArrowControlledParticle();
+      }
+    }
   }
 
-  // Método para eliminar la partícula controlada
+  onKeyUp(event) {
+    if  (this.arrowControlledParticle) {
+      // Detener el movimiento cuando se suelte la tecla de flecha
+      if (event.key === 'ArrowUp') {
+        arrowUpKeyPressed = false;
+      } else if (event.key === 'ArrowDown') {
+        arrowDownKeyPressed = false;
+      } else if (event.key === 'ArrowLeft') {
+        arrowLeftKeyPressed = false;
+      } else if (event.key === 'ArrowRight') {
+        arrowRightKeyPressed = false;
+      }
+    }
+  }
+
+  interactWithProjectParticles() {
+    const thresholdDistance = 100;
+
+    // Iterar a través de las partículas del proyecto y verificar la cercanía
+    if (this.arrowControlledParticle) {
+      for (const particle of this.particles) {
+      if (particle.isProject) {
+        const distance = this.getDistance(this.arrowControlledParticle, particle);
+        if (distance <= thresholdDistance) {
+          // Abre la URL del proyecto
+          window.open(particle.proyecto.url);
+        }
+      }
+    }
+   }
+  }
+
   removeArrowControlledParticle() {
+    
+    const index = this.particles.indexOf(this.arrowControlledParticle);
+    // Elimina la partícula controlada de la lista
+    if (index !== -1) {
+      this.particles.splice(index, 1);
+    }
+   // Restablece la referencia a la partícula controlada
     this.arrowControlledParticle = null;
+
+    this.controlButton.style.display = 'block'; // Oculta el botón
+    this.controlLegend.style.display = 'none'; // Muestra la leyenda
   }
 
   bindUiActions() {
@@ -332,61 +423,29 @@ class ParticleNetwork {
       this.touchIsMoving = true;
     };
 
-    this.onMouseDown = (e) => {
-      this.mouseIsDown = true;
-      let counter = 0;
-      let quantity = this.spawnQuantity;
-      const intervalId = setInterval(() => {
-        if (this.mouseIsDown) {
-          if (counter === 1) {
-            quantity = 1;
-          }
-        } else {
-          clearInterval(intervalId);
-        }
-        counter++;
-      }, 50);
+    this.onMouseOrTouchStart = (e) => {
+      for (let i = 0; i < this.spawnQuantity; i++) {
+        this.particles.push(new Particle(this, e.clientX, e.clientY));
+      }
     };
 
-    this.onTouchStart = (e) => {
-      setTimeout(() => {
-        if (!this.touchIsMoving) {
-          for (let i = 0; i < this.spawnQuantity; i++) {
-            this.particles.push(
-              new Particle(this, e.changedTouches[0].clientX, e.changedTouches[0].clientY)
-            );
-          }
-        }
-      }, 200);
-    };
 
-    this.onMouseUp = (e) => {
-      this.mouseIsDown = false;
-    };
 
-    this.onMouseOut = (e) => {};
+    // Agregar un controlador de eventos al botón
+    this.controlButton.addEventListener('click', (event) => {
+      this.createArrowControlledParticle(event);
+      this.controlButton.style.display = 'none'; // Oculta el botón
+      this.controlLegend.style.display = 'block'; // Muestra la leyenda
+    });
 
-    this.onTouchEnd = (e) => {
-      e.preventDefault();
-      this.touchIsMoving = false;
-    };
-
-    this.canvas.addEventListener('touchmove', this.onTouchMove);
-    this.canvas.addEventListener('mousedown', this.onMouseDown);
-    this.canvas.addEventListener('touchstart', this.onTouchStart);
-    this.canvas.addEventListener('mouseup', this.onMouseUp);
-    this.canvas.addEventListener('mouseout', this.onMouseOut);
-    this.canvas.addEventListener('touchend', this.onTouchEnd);
+    this.canvas.addEventListener('click', this.onMouseOrTouchStart);
+    this.canvas.addEventListener('touchstart', this.onMouseOrTouchStart);
   }
 
   unbindUiActions() {
     if (this.canvas) {
-      this.canvas.removeEventListener('touchmove', this.onTouchMove);
-      this.canvas.removeEventListener('mousedown', this.onMouseDown);
-      this.canvas.removeEventListener('touchstart', this.onTouchStart);
-      this.canvas.removeEventListener('mouseup', this.onMouseUp);
-      this.canvas.removeEventListener('mouseout', this.onMouseOut);
-      this.canvas.removeEventListener('touchend', this.onTouchEnd);
+      this.canvas.removeEventListener('click', this.onMouseOrTouchStart);
+      this.canvas.removeEventListener('touchstart', this.onMouseOrTouchStart);
     }
   }
 
@@ -407,88 +466,18 @@ class ParticleNetworkAnimation {
     this.mouseIsDown = false;
     this.touchIsMoving = false;
     this.spawnQuantity = 3;
-    this.arrowControlledParticle = null;
     this.proyectos = proyectos;
-
-    // Agregar un controlador de eventos para las teclas de flecha
-    document.addEventListener('keydown', this.onKeyDown.bind(this));
-    document.addEventListener('keyup', this.onKeyUp.bind(this));
 
     // Agregar un controlador de eventos de redimensionamiento de ventana
     window.addEventListener('resize', () => {
       this.handleWindowResize();
+      window.location.reload();
     });
     // Inicializar la animación
     this.init();
   }
 
-  createArrowControlParticle() {
-    console.log('===>>> dentro de createArrowControlParticle')
-    const button = this.controlButton;
-    const buttonRect = button.getBoundingClientRect();
 
-    // Calcular las coordenadas iniciales al lado del botón
-    const initialX = buttonRect.left + buttonRect.width + 10;
-    const initialY = buttonRect.top + buttonRect.height / 2;
-
-    const controlledParticle = new Particle(this.particleNetwork, initialX, initialY, false);
-    controlledParticle.isControlled = true;
-    this.arrowControlledParticle = controlledParticle;
-    console.log('<<<<<<=== dentro de createArrowControlParticle')
-  }
-
-  interactWithProjectParticles(controlledParticle) {
-    const thresholdDistance = 100;
-
-    // Iterar a través de las partículas del proyecto y verificar la cercanía
-    for (const particle of this.particleNetwork.particles) {
-      if (particle.isProject) {
-        const distance = this.getDistance(controlledParticle, particle);
-        if (distance <= thresholdDistance) {
-          // Abre la URL del proyecto
-          window.open(particle.proyecto.url, '_blank');
-          console.log('Interactuando con la partícula del proyecto:', particle.proyecto);
-        }
-      }
-    }
-  }
-
-  onKeyDown(event) {
-    if (this.arrowControlledParticle) {
-      // El usuario está controlando una partícula
-      if (event.key === 'ArrowUp') {
-        this.arrowControlledParticle.moveUp();
-      } else if (event.key === 'ArrowDown') {
-        this.arrowControlledParticle.moveDown();
-      } else if (event.key === 'ArrowLeft') {
-        this.arrowControlledParticle.moveLeft();
-      } else if (event.key === 'ArrowRight') {
-        this.arrowControlledParticle.moveRight();
-      } else if (event.key === ' ') {
-        // La barra espaciadora para interactuar con partículas proyecto
-        this.interactWithProjectParticles(this.arrowControlledParticle);
-      } else if (event.key === 'Escape') {
-        // Presionar Esc para eliminar la partícula controlada
-        this.removeArrowControlParticle();
-      }
-    }
-  }
-
-  onKeyUp(event) {
-    if (event.key.startsWith('Arrow') && this.arrowControlledParticle) {
-      // Detener el movimiento cuando se suelte la tecla de flecha
-      this.arrowControlledParticle.stopMoving();
-    }
-  }
-
-  removeArrowControlParticle() {
-    // Elimina la partícula controlada
-    this.arrowControlledParticle = null;
-    // Deberías eliminar la representación visual de la partícula controlada si es necesario.
-
-    this.controlButton.style.display = 'block'; // Oculta el botón
-    this.controlLegend.style.display = 'none'; // Muestra la leyenda
-  }
 
   init() {
     // Configurar el contenedor y el canvas
@@ -514,10 +503,9 @@ class ParticleNetworkAnimation {
 
   onProjectParticleClick(e) {
     // Obtener la posición del clic en relación con el lienzo
-    const clickX = e.offsetX;
-    const clickY = e.offsetY;
-
-    console.log('Clic en X:', clickX, 'Y:', clickY);
+    const rect = this.canvas.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const clickY = e.clientY - rect.top;
 
     // Iterar a través de las partículas y verificar si el clic está dentro de alguna partícula-proyecto
     for (const particle of this.particleNetwork.particles) {
@@ -526,12 +514,8 @@ class ParticleNetworkAnimation {
         const dy = clickY - particle.y;
         const distance = Math.sqrt(dx * dx + dy * dy);
 
-
-        console.log('Distancia:', distance);
-
         // Si el clic está dentro de una partícula-proyecto, abrir la URL del proyecto
         if (distance <= particle.radius) {
-          console.log('Clic dentro de la partícula:', particle);
           window.open(particle.proyecto.url, '_blank');
           break; // Salir del bucle una vez que se abra la URL
         }
@@ -542,23 +526,11 @@ class ParticleNetworkAnimation {
   bindUiActions() {
     // Manejo de eventos de interacción del usuario
     this.canvas.addEventListener('click', this.onProjectParticleClick.bind(this));
-
-    // Inicializa el botón y la leyenda para el control de partículas
-    this.controlButton = document.querySelector('.controlButton');
-    this.controlLegend = document.querySelector('.controlLegend');
-
-    // Agregar un controlador de eventos al botón
-    this.controlButton.addEventListener('click', () => {
-      this.createArrowControlParticle();
-      this.controlButton.style.display = 'none'; // Oculta el botón
-      this.controlLegend.style.display = 'block'; // Muestra la leyenda
-    });
   }
 }
-// let isParticleNetworkInitialized = false;
 
 const initializeParticleNetworkAnimation = () => {
-  new ParticleNetworkAnimation
+  new ParticleNetworkAnimation();
 };
 
 export default initializeParticleNetworkAnimation;
