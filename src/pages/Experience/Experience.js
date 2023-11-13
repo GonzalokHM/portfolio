@@ -1,7 +1,9 @@
+import './styles.css';
+
 const Experience = () => {
   return `
     <h2>Experience</h2>
-    <p>Esta es la Experience de nuestra aplicación web</p>
+    <svg id="pieChart" width="260" height="250"></svg>
     `;
 };
 

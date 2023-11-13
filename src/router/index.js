@@ -4,6 +4,7 @@ import Home from '../pages/Home/Home';
 import NotFound from '../pages/NotFound/NotFound';
 import Projects from '../pages/Projects/Projects';
 import initializeParticleNetworkAnimation from '../pages/Projects/particlesNet';
+import drawPieChart from '../pages/Experience/Piechart';
 
 //Vamos a crear un array de objetos que incluya la ruta y el componente de cada una de las páginas
 const routes = [
@@ -37,10 +38,12 @@ export const router = () => {
       document.body.classList.add('home-page');
     }
     if (path === '/projects') {
-      console.log('initializeParticleNetworkAnimation > router')
       initializeParticleNetworkAnimation();
-      document.body.classList.add('projects');
     }
+    if (path === '/experience') {
+      setTimeout(() => {
+        drawPieChart();
+      }, 100);    }
   } else {
     document.querySelector('main').innerHTML = NotFound();
   }

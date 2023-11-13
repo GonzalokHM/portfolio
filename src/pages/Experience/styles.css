@@ -1,0 +1,14 @@
+svg {
+    display: block;
+    margin: 20px auto;
+  }
+
+.segment-text {
+    fill: #000; /* Color del texto */
+    font-size: 12px; /* Tamaño del texto */
+    pointer-events: none; /* Evitar que el texto afecte a los eventos de ratón */
+  }
+  
+  .highlighted-text {
+    fill: #fff; /* Color del texto resaltado */
+  }
