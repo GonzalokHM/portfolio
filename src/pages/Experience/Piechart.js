@@ -48,17 +48,21 @@ const drawPieChart = () => {
     path.setAttribute('stroke-width', '1');
     path.addEventListener('mouseover', () => highlightSegment(path, percentage, name));
     path.addEventListener('mouseout', () => resetSegment(path));
-    pieChart.appendChild(path);
+    // pieChart.appendChild(path);
 
     const textAngle = (startAngle + endAngle) / 2;
-    const textCoords = coords(textAngle, r * 1.2);
+    const textCoords = coords(textAngle, r * 0.8);
     const text = document.createElementNS('http://www.w3.org/2000/svg', 'text');
     text.setAttribute('x', textCoords.x);
     text.setAttribute('y', textCoords.y);
     text.setAttribute('text-anchor', 'middle');
     text.setAttribute('alignment-baseline', 'middle');
+    text.setAttribute('fill', '#fff');
     text.textContent = `${name} (${percentage}%)`;
-    path.appendChild(text);
+    // path.appendChild(text);
+
+    pieChart.appendChild(path);
+    pieChart.appendChild(text);
   };
 
   const getAngle = (percentage) => (360 * percentage) / 100;
