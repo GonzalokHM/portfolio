@@ -43,7 +43,8 @@ export const router = () => {
     if (path === '/experience') {
       setTimeout(() => {
         drawPieChart();
-      }, 100);    }
+      }, 100);
+    }
   } else {
     document.querySelector('main').innerHTML = NotFound();
   }

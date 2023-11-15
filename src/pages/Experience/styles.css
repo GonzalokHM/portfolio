@@ -3,12 +3,21 @@ svg {
     margin: 20px auto;
   }
 
-.segment-text {
-    fill: #000; /* Color del texto */
+  .segment-text {
+    fill: black; /* Color del texto */
     font-size: 12px; /* Tamaño del texto */
-    pointer-events: none; /* Evitar que el texto afecte a los eventos de ratón */
+    opacity: 1; /* Inicialmente ocultar todos los textos */
+    transition: opacity 0.5s ease-in-out; /* Agregar una transición suave para la opacidad */
   }
   
   .highlighted-text {
-    fill: #fff; /* Color del texto resaltado */
+    opacity: 1; /* Mostrar el texto del segmento seleccionado */
+    /* transition: opacity 0.2s ease-out; */
   }
+
+
+  
+  .blurred-segment {
+    filter: blur(5px); /* Aplicar un efecto de desenfoque a los segmentos no seleccionados */
+  }
+  
