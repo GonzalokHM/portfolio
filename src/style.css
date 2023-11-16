@@ -88,6 +88,12 @@ main > * {
   bottom: 1.95rem;
   margin-right: 1.5rem;
 }
+.particle-network-animation{
+  height: 75%;
+}
+#jobs{
+  height: 35vh;
+}
 }
 @media screen and (max-width: 500px) {
 header{
@@ -115,6 +121,10 @@ header{
   
   #lineLink{
     margin: 5px;
+  }
+
+  #jobs{
+    height: 38vh;
   }
 
 

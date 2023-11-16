@@ -5,6 +5,7 @@ import NotFound from '../pages/NotFound/NotFound';
 import Projects from '../pages/Projects/Projects';
 import initializeParticleNetworkAnimation from '../pages/Projects/particlesNet';
 import drawPieChart from '../pages/Experience/Piechart';
+import jobsList from '../pages/Experience/jobs';
 
 //Vamos a crear un array de objetos que incluya la ruta y el componente de cada una de las páginas
 const routes = [
@@ -43,6 +44,7 @@ export const router = () => {
     if (path === '/experience') {
       setTimeout(() => {
         drawPieChart();
+        jobsList();
       }, 100);
     }
   } else {

@@ -115,7 +115,7 @@ const drawPieChart = () => {
         allTexts.forEach((text) => {
           text.style.opacity = '0';
         });
-      }, 5000); // 5000 milisegundos (5 segundos)
+      }, 3000); // 5000 milisegundos (5 segundos)
     } else {
       console.error('El elemento #pieChart no se encontró en el DOM.');
     }
