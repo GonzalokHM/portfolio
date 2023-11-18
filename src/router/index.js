@@ -58,21 +58,20 @@ window.addEventListener('popstate', router);
 //Vamos a añadirle un evento DomContentLoaded al documento para cargar la página cada vez que se actualice el contenido del main
 document.addEventListener('DOMContentLoaded', router);
 
+const handleNavLinkClick = (ev) => {
+  ev.preventDefault();
+  const linkHref = ev.target.href;
+  console.log('El link apunta a:', linkHref);
+  const path = new URL(linkHref).pathname;
+  history.pushState(null, null, path);
+  router();
+};
+
 //Vamos a encapsular los listeners en una función para que se lancen después del router y le de tiempo a encontrar los anchors
 export const addListeners = () => {
   //Vamos a añadirle un evento click a todos los links del nav
-  const navLinks = document.querySelectorAll('nav a');
+  const navLinks = document.querySelectorAll('.nav-link');
   navLinks.forEach((link) => {
-    //Le añadimos un evento click a cada uno
-    link.addEventListener('click', (ev) => {
-      //Le quitamos el comportamiento por defecto que hace que se recargue la página
-      ev.preventDefault();
-      //Vamos a recuperar el href de cada uno de los links
-      const href = link.getAttribute('href');
-      //Vamos a controlar el historial de navegación empujando un nuevo estado al cambiar la URL pero sin recargar la página
-      history.pushState(null, null, href);
-      //Disparamos de nuevo el router para que en cada uno de los clicks vuelva a detectar la ruta, detecte cual es y renderice el componente correspondiente
-      router();
-    });
+    link.addEventListener('click', handleNavLinkClick);
   });
 };
