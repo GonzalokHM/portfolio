@@ -5,12 +5,12 @@ const template = () => {
   <h3>more about me:</h3>
   <ul class="footer-contact-links">
   <li id="linkedinLinkF" class="gitKedinF">
-   <a href="https://www.linkedin.com/in/gonzalo-hernando-2973a2202/" target="_blank"
+   <a href="https://www.linkedin.com/in/gonzalo-hernando-2973a2202/" target="_blank">
    <i class="fa-brands fa-linkedin"></i>
   </a>
   </li>
   <li id="line">
-  <a href="line://msg/text/+34656316843" id="lineLink"
+  <a href="line://msg/text/+34656316843" id="lineLink">
   <i class="fa-brands fa-line" style="color: #00ff04;"></i>
   </a>
   </li>
