@@ -70,29 +70,47 @@ main > * {
 }
 
 /* medias */
-@media screen and (max-width: 411px) {
-  .home-page .gitKedinF{
-    bottom: 5.6vh;
-    position: relative;
-}
-
-.home-page #githubLinkF{
-   bottom: 4.7rem;
-   left:28px;
-}
-
-.home-page #lineLink{
-    margin-left: 0.9rem;
-}
-.home-page #linkedinLinkF{
-  bottom: 1.95rem;
-  margin-right: 1.5rem;
-}
+@media screen and (max-width: 430px) {
+ 
 .particle-network-animation{
   height: 75%;
 }
 #jobs{
   height: 35vh;
+}
+/* hamburguer */
+
+.hamburger-label {
+  display: block;
+}
+
+.nav-list {
+  display: none;
+  text-align: center;
+  background-color: #ffffff;
+  position: absolute;
+  z-index: 1;
+  left: 8rem;
+  right: 8rem;
+  top: 13vh;
+  border-radius: 10px;
+}
+
+.nav-list ul {
+  padding: 0;
+  list-style-type: none;
+}
+
+.nav-list li {
+  padding: 10px;
+}
+
+.hamburger:checked + nav .nav-list {
+  display: block;
+}
+
+.hamburger:checked + .content {
+  margin-top: 250px
 }
 }
 @media screen and (max-width: 500px) {
@@ -108,12 +126,11 @@ header{
   #homeContainer{
     padding-top: 12vh;
   }
+  .controlButton{
+    display: none;
+  }
 }
 @media screen and (min-width: 501px) {
-.home-page .gitKedinF {
-  bottom: 22vh;
-  position: relative;
-}
   .footer-contact-links{
     display: flex;
     
@@ -138,10 +155,6 @@ header{
 
 #lineLink{
   margin: 5px;
-}
-.home-page .gitKedinF{
-  bottom: 15vh;
-  position: relative;
 }
 
 }

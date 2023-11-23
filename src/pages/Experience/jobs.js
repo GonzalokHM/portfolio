@@ -77,7 +77,7 @@ const jobsList = () => {
     {
       name: 'Google Inc.',
       position: 'Full Stack Developer',
-      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/50px-Google_%22G%22_Logo.svg.png',
+      logo: 'https://upload.wikimedia.org/wikipedia/commons/thumb/0/09/IOS_Google_icon.png/50px-IOS_Google_icon.png',
       dates: 'January 2020 - Present',
       description: 'Leading technology company, focused on search engines and online services.',
       responsibilities: [

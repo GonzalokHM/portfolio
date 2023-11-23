@@ -11,3 +11,17 @@ header ul {
 	gap: 2rem;
 	list-style-type: none;
 }
+
+/* hamburguer */
+
+
+.hamburger-label {
+	font-size: 2rem;
+	cursor: pointer;
+	padding: 10px;
+	display: none;
+  }
+  
+  .hamburger {
+	display: none;
+  }

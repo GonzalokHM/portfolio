@@ -2,6 +2,7 @@ import './Footer.css';
 
 const template = () => {
   return `
+  <h3>more about me:</h3>
   <ul class="footer-contact-links">
   <li id="linkedinLinkF" class="gitKedinF">
    <a href="https://www.linkedin.com/in/gonzalo-hernando-2973a2202/" target="_blank"
@@ -19,6 +20,7 @@ const template = () => {
    </a>
   </li>
   </ul>
+  <p>developed with heart by Gonzalo Hernando</p>
   `;
 };
 let messageContainer;

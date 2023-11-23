@@ -3,8 +3,10 @@ import './Header.css';
 const template = () => {
   return `
     <h1>Portfolio</h1>
+    <label class="hamburger-label" for="hamburger">&#9776;</label>
+       <input type="checkbox" class="hamburger" id="hamburger" />
     <nav>
-        <ul>
+        <ul class="nav-list">
             <li>
                 <a id="home-link" class="nav-link" href="/home">
                 <i class="fas fa-home" style="color: #d64000;"></i>
