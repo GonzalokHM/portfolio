@@ -37,18 +37,16 @@ class Particle {
       };
       this.x = x;
       this.y = y;
-      // Define los límites de la zona de movimiento basados en la posición de creación
+      // Define los límites de la zona de movimiento
       const marginX = this.canvas.width * 0.2;
       const marginY = this.canvas.height * 0.2;
-      
-      // Establece la moveArea
+
       this.moveArea = {
-          x: marginX,
-          y: marginY,
-          width: this.canvas.width - 2 * marginX,
-          height: this.canvas.height - 2 * marginY
+        x: marginX,
+        y: marginY,
+        width: this.canvas.width - 2 * marginX,
+        height: this.canvas.height - 2 * marginY
       };
-   
     } else if (!isProject && !isControlled) {
       // Configuración para partículas normales de fondo
       this.radius = getLimitedRandom(5.5, 8.5);
@@ -94,28 +92,25 @@ class Particle {
         this.velocity.y = -this.velocity.y;
       }
       this.x += this.velocity.x;
-      this.y += this.velocity.y; 
-    }
+      this.y += this.velocity.y;
+    } else if (this.isProject && this.proyecto) {
+      this.x += this.velocity.x;
+      this.y += this.velocity.y;
 
-    else if (this.isProject && this.proyecto) {
-    this.x += this.velocity.x;
-    this.y += this.velocity.y;
-   
-        // Comprueba si la partícula choca con algún borde de la moveArea
-        if (this.x  > this.moveArea.width || this.x < this.moveArea.x) {
-          // Si choca con el borde horizontal, revierte la velocidad en X
-          this.velocity.x = -this.velocity.x;
+      // Comprueba si la partícula choca con algún borde de la moveArea
+      if (this.x > this.moveArea.width || this.x < this.moveArea.x) {
+        // Si choca con el borde horizontal, revierte la velocidad en X
+        this.velocity.x = -this.velocity.x;
       }
 
-      if (this.y  > this.moveArea.height || this.y < this.moveArea.y) {
-          // Si choca con el borde vertical, revierte la velocidad en Y
-          this.velocity.y =  -this.velocity.y;
+      if (this.y > this.moveArea.height || this.y < this.moveArea.y) {
+        // Si choca con el borde vertical, revierte la velocidad en Y
+        this.velocity.y = -this.velocity.y;
       }
-    
+
       // Comprueba la colisión con otras partículas de proyecto
       for (const particle of this.network.particles) {
         if (particle.isProject && particle !== this) {
-          
           const distance = this.network.getDistance(this, particle);
           const combinedRadius = this.radius + particle.radius;
           // Si hay colisión, ajusta las posiciones y velocidades
@@ -123,13 +118,13 @@ class Particle {
           if (distance < combinedRadius + tolerance) {
             const angle = Math.atan2(particle.y - this.y, particle.x - this.x);
             const overlap = combinedRadius - distance;
-            
+
             // Calcula las nuevas posiciones después del ajuste por superposición
             this.x -= (overlap / 2) * Math.cos(angle);
             this.y -= (overlap / 2) * Math.sin(angle);
             particle.x += (overlap / 2) * Math.cos(angle);
             particle.y += (overlap / 2) * Math.sin(angle);
-            
+
             // Invierte la dirección de la velocidad para ambas partículas
             this.velocity.x *= -1;
             this.velocity.y *= -1;
@@ -138,9 +133,7 @@ class Particle {
           }
         }
       }
-    }
-    
-     else if (this.isControlled) {
+    } else if (this.isControlled) {
       if (this.isControlled) {
         if (arrowUpKeyPressed) {
           this.y = Math.max(this.moveArea.y, this.y - this.controlledSpeed); // Mueve hacia arriba
@@ -195,8 +188,8 @@ class Particle {
   }
 
   loadImage() {
-    const x = this.x;
-    const y = this.y;
+    const { x } = this;
+    const { y } = this;
     // Cargar la imagen de proyecto
     this.img = new Image();
     this.img.onload = () => {

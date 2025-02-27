@@ -1,7 +1,6 @@
 import Home from './Home';
 
 const fillHomeData = () => {
-
   const profileData = {
     imagePath: '/foto.jpg',
     name: 'Gonzalo Hernando Montes',

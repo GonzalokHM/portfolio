@@ -1,64 +1,46 @@
+import showLineMessage from '../../utils/footerMesage';
+import links from '../../utils/footerLinks';
 import './Footer.css';
 
-const template = () => {
-  return `
-  <h3>more about me:</h3>
-  <ul class="footer-contact-links">
-  <li id="linkedinLinkF" class="gitKedinF">
-   <a href="https://www.linkedin.com/in/gonzalo-hernando-2973a2202/" target="_blank">
-   <i class="fa-brands fa-linkedin"></i>
-  </a>
-  </li>
-  <li id="line">
-  <a href="line://msg/text/+34656316843" id="lineLink">
-  <i class="fa-brands fa-line" style="color: #00ff04;"></i>
-  </a>
-  </li>
-  <li id="githubLinkF" class="gitKedinF">
-   <a href="https://github.com/GonzalokHM" target="_blank">
-       <i class="fab fa-github"></i>
-   </a>
-  </li>
-  </ul>
-  <p>developed with heart by Gonzalo Hernando</p>
-  `;
-};
-let messageContainer;
-
 const Footer = () => {
-  document.querySelector('footer').innerHTML = template();
-  const lineLink = document.getElementById('lineLink');
+  const footer = document.querySelector('footer');
+  footer.innerHTML = '';
 
-  lineLink.addEventListener('click', (ev) => {
-    ev.preventDefault();
+  const title = document.createElement('h3');
+  title.textContent = 'More about me:';
 
-    if (/Mobi|Android/i.test(navigator.userAgent)) {
-      // Dispositivo móvil, abrir Line
-      window.location.href = 'line://msg/text/+34656316843';
-      console.error('Failed to launch error ==> Because you are not in a smartphone');
-    } else if (!messageContainer) {
-      // Dispositivo de escritorio, mostrar mensaje
-      const contactLinks = document.getElementsByClassName('footer-contact-links')[0];
-      contactLinks.insertAdjacentHTML(
-        'afterend',
-        `<div id="overlay">
-           <div id="lineMessageContainer">
-               <p>Contacta con nosotros a través de Line: +34656316843</p>
-            </div>
-         </div>`
-      );
+  const contactList = document.createElement('ul');
+  contactList.classList.add('footer-contact-links');
 
-      messageContainer = document.getElementById('lineMessageContainer');
+  links.forEach((link) => {
+    const li = document.createElement('li');
+    li.id = link.id;
+    if (link.className) li.classList.add(link.className);
 
-      // Eliminar el mensaje después de 8 segundos
-      setTimeout(() => {
-        if (messageContainer) {
-          messageContainer.remove();
-          messageContainer = '';
+    const a = document.createElement('a');
+    a.href = link.href;
+    a.target = '_blank';
+    a.innerHTML = `<i class="${link.icon}" style="color: ${link.color || 'inherit'};"></i>`;
+
+    li.appendChild(a);
+    contactList.appendChild(li);
+
+    if (link.special) {
+      a.addEventListener('click', (ev) => {
+        ev.preventDefault();
+        if (/Mobi|Android/i.test(navigator.userAgent)) {
+          window.location.href = link.href;
+        } else {
+          showLineMessage();
         }
-      }, 8000);
+      });
     }
   });
+
+  const devText = document.createElement('p');
+  devText.textContent = 'Developed with heart by Gonzalo Hernando';
+
+  footer.append(title, contactList, devText);
 };
 
 export default Footer;
