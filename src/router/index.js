@@ -1,31 +1,15 @@
-import Experience from '../pages/Experience/Experience';
 import fillHomeData from '../pages/Home/FillHomeData';
-import Home from '../pages/Home/Home';
 import NotFound from '../pages/NotFound/NotFound';
-import Projects from '../pages/Projects/Projects';
 import initializeParticleNetworkAnimation from '../pages/Projects/particlesNet';
+import routes from '../utils/routes';
 
-const routes = [
-  {
-    path: '/home',
-    component: Home
-  },
-  {
-    path: '/experience',
-    component: Experience
-  },
-  {
-    path: '/projects',
-    component: Projects
-  }
-];
 export const router = () => {
   const path = window.location.pathname;
   const main = document.querySelector('main');
   main.innerHTML = '';
-  const route = routes.find((route) => route.path === path);
-  if (route) {
-    const renderedComponent = route.component();
+  const checkRoute = routes.find((route) => route.path === path);
+  if (checkRoute) {
+    const renderedComponent = checkRoute.component();
     if (renderedComponent instanceof HTMLElement) {
       main.appendChild(renderedComponent);
     } else {

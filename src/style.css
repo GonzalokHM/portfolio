@@ -28,14 +28,12 @@ body {
   color: var(--secondary);
 }
 
-
-
 a {
   text-decoration: none;
   color: inherit;
 }
 
-ul{
+ul {
   text-decoration: none;
   list-style: none;
 }
@@ -65,97 +63,90 @@ main > * {
   }
 
   100% {
-    opacity: 1; 
+    opacity: 1;
   }
 }
 
 /* medias */
 @media screen and (max-width: 430px) {
- 
-.particle-network-animation{
-  height: 75%;
-}
-#jobs{
-  height: 35vh;
-}
-/* hamburguer */
+  .particle-network-animation {
+    height: 75%;
+  }
+  #jobs {
+    height: 35vh;
+  }
+  /* hamburguer */
 
-.hamburger-label {
-  display: block;
-}
+  .hamburger-label {
+    display: block;
+  }
 
-.nav-list {
-  display: none;
-  text-align: center;
-  background-color: #ffffff;
-  position: absolute;
-  z-index: 1;
-  left: 8rem;
-  right: 8rem;
-  top: 13vh;
-  border-radius: 10px;
-}
+  .nav-list {
+    display: none;
+    text-align: center;
+    background-color: #ffffff;
+    position: absolute;
+    z-index: 1;
+    left: 8rem;
+    right: 8rem;
+    top: 13vh;
+    border-radius: 10px;
+  }
 
-.nav-list ul {
-  padding: 0;
-  list-style-type: none;
-}
+  .nav-list {
+    padding: 0;
+    list-style-type: none;
+  }
 
-.nav-list li {
-  padding: 10px;
-}
+  .nav-list li {
+    padding: 10px;
+  }
 
-.hamburger:checked + nav .nav-list {
-  display: block;
-}
+  .hamburger:checked + nav .nav-list {
+    display: block;
+  }
 
-.hamburger:checked + .content {
-  margin-top: 250px
-}
+  .hamburger:checked + .content {
+    margin-top: 250px;
+  }
 }
 @media screen and (max-width: 500px) {
-header{
-  gap: 0.5rem;
-}
+  header {
+    gap: 0.5rem;
+  }
 }
 
 @media screen and (max-width: 501px) {
-  header{
+  header {
     flex-direction: column;
-    }
-  #homeContainer{
+  }
+  #homeContainer {
     padding-top: 12vh;
   }
 
-  .controlButton{
+  .controlButton {
     display: none;
   }
 }
 @media screen and (min-width: 501px) {
-  .footer-contact-links{
+  .footer-contact-links {
     display: flex;
-    
-  }
-  
-  #lineLink{
-    margin: 5px;
   }
 
-  #jobs{
+  #line {
+    padding: 12px;
+  }
+
+  #jobs {
     height: 38vh;
   }
-
-
 }
 @media screen and (min-width: 412px) and (max-width: 500px) {
+  .footer-contact-links {
+    display: flex;
+  }
 
-.footer-contact-links{
-  display: flex;
-  
-}
-
-#lineLink{
-  margin: 5px;
-}
-
+  #line {
+    padding: 0px 15px 0 15px;
+  }
 }

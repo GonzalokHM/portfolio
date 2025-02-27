@@ -1,27 +1,26 @@
 header {
-	height: 10vh;
-	display: flex;
-	padding: 0 2rem;
-	gap: 2rem;
-	align-items: center;
+  height: 10vh;
+  display: flex;
+  padding: 0 2rem;
+  gap: 2rem;
+  align-items: center;
 }
 
-header ul {
-	display: flex;
-	gap: 2rem;
-	list-style-type: none;
+.nav-list {
+  display: flex;
+  gap: 2rem;
+  list-style-type: none;
 }
 
 /* hamburguer */
 
-
 .hamburger-label {
-	font-size: 2rem;
-	cursor: pointer;
-	padding: 10px;
-	display: none;
-  }
-  
-  .hamburger {
-	display: none;
-  }
+  font-size: 2rem;
+  cursor: pointer;
+  padding: 10px;
+  display: none;
+}
+
+.hamburger {
+  display: none;
+}

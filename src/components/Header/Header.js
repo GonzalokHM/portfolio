@@ -2,7 +2,7 @@ import './Header.css';
 
 const Header = () => {
   const header = document.querySelector('header');
-  header.innerHTML = ''; // Limpiar contenido previo
+  header.innerHTML = '';
 
   const title = document.createElement('h1');
   title.textContent = 'Portfolio';
