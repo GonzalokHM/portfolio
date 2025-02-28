@@ -1,7 +1,7 @@
 import './Header.css';
 
 const Header = () => {
-  const header = document.querySelector('header');
+  const header = document.createElement('header');
   header.innerHTML = '';
 
   const title = document.createElement('h1');
@@ -52,6 +52,8 @@ const Header = () => {
 
   nav.appendChild(navList);
   header.append(title, hamburgerLabel, hamburgerInput, nav);
+
+  return header;
 };
 
 export default Header;

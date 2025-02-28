@@ -1,21 +1,23 @@
 footer {
-	display: flex;
-    flex-direction: column;
-	justify-content: center;
-	align-items: center;
-	height: 7vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  height: 7vh;
 }
 
-#lineMessageContainer{
-    display: flex;
-    align-items: center;
+#lineMessageContainer {
+  display: flex;
+  align-items: center;
 }
 
-#overlay{
-    position: absolute;
-    display: flex;
-    bottom:2vh;
-    justify-content: center;
-    align-items: center;
-    
+#overlay {
+  position: absolute;
+  display: flex;
+  bottom: 2vh;
+  justify-content: center;
+  align-items: center;
+}
+.footer-contact-links {
+  font-size: 25px;
 }

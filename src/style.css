@@ -68,10 +68,12 @@ main > * {
 }
 
 /* medias */
-@media screen and (max-width: 430px) {
-  .particle-network-animation {
-    height: 75%;
+@media screen and (max-width: 390px) {
+  .footer-contact-links {
+    font-size: 17px;
   }
+}
+@media screen and (max-width: 430px) {
   #jobs {
     height: 35vh;
   }
@@ -106,8 +108,14 @@ main > * {
     display: block;
   }
 
-  .hamburger:checked + .content {
+  .hamburger:checked + main {
     margin-top: 250px;
+  }
+  footer {
+    height: 3vh;
+  }
+  .projetsContainer {
+    height: 58vh;
   }
 }
 @media screen and (max-width: 500px) {
@@ -148,5 +156,21 @@ main > * {
 
   #line {
     padding: 0px 15px 0 15px;
+  }
+}
+@media screen and (min-width: 1020px) {
+  .projetsContainer {
+    height: 74vh;
+  }
+
+  footer {
+    flex-direction: row;
+  }
+  #line {
+    padding: 0;
+  }
+
+  .gitKedinF {
+    padding: 0px 10px 0px 10px;
   }
 }

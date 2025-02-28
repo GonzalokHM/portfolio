@@ -1,5 +1,5 @@
-import companies from '../../utils/jobsData';
-import showInfo from '../../utils/showInfo';
+import companies from '../../data/jobsData';
+import showInfo from '../../data/showInfo';
 
 const jobsList = () => {
   const jober = document.getElementById('jobs');

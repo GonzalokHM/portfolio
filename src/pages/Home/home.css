@@ -1,26 +1,26 @@
-#homeTitle{
-    position: absolute;
-    top: 16vh;
+#homeTitle {
+  position: absolute;
+  top: 15vh;
 }
-#homeContainer{
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 20px;
+#homeContainer {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 20px;
 }
-#profileImage{
-    width: 45px;
-    border-radius: 8px;
-    border: 1px solid black;
+#profileImage {
+  width: 50vh;
+  border-radius: 8px;
+  border: 1px solid black;
 }
 
 #name,
 #job,
-#description, #homeLinks {
-    padding: 10px;
+#description,
+#homeLinks {
+  padding: 10px;
 }
-#description{
-
-    text-align: center;
-    max-width: 90vh;
+#description {
+  text-align: center;
+  max-width: 90vh;
 }

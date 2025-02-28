@@ -7,8 +7,11 @@ if (window.location.pathname === '/') {
   window.location.pathname = '/home';
 }
 
-Header();
-Footer();
+const app = document.getElementById('app');
 
-router();
+const header = Header();
+const main = document.createElement('main');
+const footer = Footer();
+app.append(header, main, footer);
+router(main);
 addListeners();

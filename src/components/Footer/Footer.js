@@ -1,10 +1,9 @@
-import showLineMessage from '../../utils/footerMesage';
-import links from '../../utils/footerLinks';
+import showLineMessage from '../../data/footerMesage';
+import links from '../../data/footerLinks';
 import './Footer.css';
 
 const Footer = () => {
-  const footer = document.querySelector('footer');
-  footer.innerHTML = '';
+  const footer = document.createElement('footer');
 
   const title = document.createElement('h3');
   title.textContent = 'More about me:';
@@ -41,6 +40,8 @@ const Footer = () => {
   devText.textContent = 'Developed with heart by Gonzalo Hernando';
 
   footer.append(title, contactList, devText);
+
+  return footer;
 };
 
 export default Footer;

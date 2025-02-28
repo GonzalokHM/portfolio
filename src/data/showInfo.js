@@ -34,12 +34,12 @@ const showInfo = (company, modal, overlay, infoContainerModal) => {
     return wrapper;
   };
 
-  infoContainerModal.appendChild(companyLink);
-  infoContainerModal.appendChild(companyName);
-  infoContainerModal.appendChild(createInfoBlock('Position:', company.position));
-  infoContainerModal.appendChild(createInfoBlock('Dates:', company.dates));
-  infoContainerModal.appendChild(createInfoBlock('Description:', company.description));
-  infoContainerModal.appendChild(
+  infoContainerModal.append(
+    companyLink,
+    companyName,
+    createInfoBlock('Position:', company.position),
+    createInfoBlock('Dates:', company.dates),
+    createInfoBlock('Description:', company.description),
     createInfoBlock('Responsibilities:', company.responsibilities.join(', '))
   );
 

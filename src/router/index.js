@@ -1,7 +1,7 @@
 import fillHomeData from '../pages/Home/FillHomeData';
 import NotFound from '../pages/NotFound/NotFound';
 import initializeParticleNetworkAnimation from '../pages/Projects/particlesNet';
-import routes from '../utils/routes';
+import routes from '../data/routes';
 
 export const router = () => {
   const path = window.location.pathname;

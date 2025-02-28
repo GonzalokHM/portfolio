@@ -2,7 +2,7 @@ import Home from './Home';
 
 const fillHomeData = () => {
   const profileData = {
-    imagePath: '/foto.jpg',
+    imagePath: '/foto.webp',
     name: 'Gonzalo Hernando Montes',
     job: 'Enthusiastic Full Stack Developer in the Making',
     description:
